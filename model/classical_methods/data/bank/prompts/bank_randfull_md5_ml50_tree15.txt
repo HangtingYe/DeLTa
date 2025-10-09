@@ -1,0 +1,1482 @@
+You are an expert in tabular machine learning domain. I will provide the meta information, the CART tree rules about the prediction task. Please help me design a better rule for inference.
+## Meta information about dataset.
+{
+    "task_type": "binclass",
+    "num_classes": 2,
+    "n_num_features": 7,
+    "n_cat_features": 9,
+    "train_size": 28934,
+    "val_size": 7234,
+    "test_size": 9043,
+    "task_intro": "The data is related with direct marketing campaigns of a Portuguese banking institution. The marketing campaigns were based on phone calls. Often, more than one contact to the same client was required, in order to access if the product (bank term deposit) would be (or not) subscribed.The classification goal is to predict if the client will subscribe a term deposit (variable y).",
+    "feature_intro": {
+        "num":{
+            "age": "age",
+            "balance": "balance",
+            "day":"day",
+            "duration": "duration",
+            "campaign": "campaign",
+	        "pdays": "pdays",
+            "previous":"previous"
+        },
+        "cat":{
+		"job":"job",
+		"marital":"marital",
+		"education":"education",
+		"default":"default",
+		"housing":"housing",
+		"loan":"loan",
+		"contact":"contact",
+		"month":"month",
+		"poutcome":"poutcome"
+	}
+    },
+    "target_intro":{
+	"the product (bank term deposit) would be subscribed":"the product (bank term deposit) would not be subscribed",
+	"the product (bank term deposit) would not be subscribed":"the product (bank term deposit) would be subscribed"
+    },
+}
+## CART tree rules
+Tree 0 rules:
+|--- feature_0 <= 1.84
+|   |--- feature_14 <= 1.32
+|   |   |--- feature_13 <= -0.16
+|   |   |   |--- feature_0 <= -1.17
+|   |   |   |   |--- feature_3 <= 0.72
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  0.72
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_0 >  -1.17
+|   |   |   |   |--- feature_2 <= -1.48
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_2 >  -1.48
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_13 >  -0.16
+|   |   |   |--- feature_15 <= -0.06
+|   |   |   |   |--- feature_1 <= 2.58
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_1 >  2.58
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_15 >  -0.06
+|   |   |   |   |--- feature_3 <= 1.89
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  1.89
+|   |   |   |   |   |--- class: 0.0
+|   |--- feature_14 >  1.32
+|   |   |--- feature_3 <= -0.50
+|   |   |   |--- feature_3 <= -0.64
+|   |   |   |   |--- feature_3 <= -0.96
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  -0.96
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_3 >  -0.64
+|   |   |   |   |--- feature_5 <= 0.92
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_5 >  0.92
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_3 >  -0.50
+|   |   |   |--- feature_5 <= -0.01
+|   |   |   |   |--- feature_1 <= -0.41
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_1 >  -0.41
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_5 >  -0.01
+|   |   |   |   |--- feature_4 <= -0.41
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_4 >  -0.41
+|   |   |   |   |   |--- class: 1.0
+|--- feature_0 >  1.84
+|   |--- feature_0 <= 2.97
+|   |   |--- feature_3 <= -0.40
+|   |   |   |--- feature_2 <= 0.08
+|   |   |   |   |--- feature_5 <= 1.43
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_5 >  1.43
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_2 >  0.08
+|   |   |   |   |--- feature_6 <= 3.55
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_6 >  3.55
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_3 >  -0.40
+|   |   |   |--- feature_13 <= 0.95
+|   |   |   |   |--- feature_1 <= 1.43
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_1 >  1.43
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_13 >  0.95
+|   |   |   |   |--- class: 0.0
+|   |--- feature_0 >  2.97
+|   |   |--- feature_3 <= 0.01
+|   |   |   |--- feature_2 <= -0.64
+|   |   |   |   |--- feature_9 <= -0.96
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_9 >  -0.96
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_2 >  -0.64
+|   |   |   |   |--- feature_13 <= -0.16
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_13 >  -0.16
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_3 >  0.01
+|   |   |   |--- feature_5 <= 1.29
+|   |   |   |   |--- feature_6 <= 0.76
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_6 >  0.76
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_5 >  1.29
+|   |   |   |   |--- feature_2 <= -0.34
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_2 >  -0.34
+|   |   |   |   |   |--- class: 1.0
+
+--------------------------------------------------------------------------------
+Tree 1 rules:
+|--- feature_3 <= 1.03
+|   |--- feature_3 <= -0.20
+|   |   |--- feature_0 <= 1.84
+|   |   |   |--- feature_5 <= -0.40
+|   |   |   |   |--- feature_0 <= -1.35
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_0 >  -1.35
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_5 >  -0.40
+|   |   |   |   |--- feature_9 <= 0.37
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_9 >  0.37
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_0 >  1.84
+|   |   |   |--- feature_2 <= -1.00
+|   |   |   |   |--- feature_3 <= -0.41
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  -0.41
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_2 >  -1.00
+|   |   |   |   |--- feature_1 <= -0.44
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_1 >  -0.44
+|   |   |   |   |   |--- class: 0.0
+|   |--- feature_3 >  -0.20
+|   |   |--- feature_15 <= -0.06
+|   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |--- feature_3 <= 0.54
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  0.54
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |--- feature_1 <= -0.48
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_1 >  -0.48
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_15 >  -0.06
+|   |   |   |--- feature_11 <= -0.12
+|   |   |   |   |--- feature_1 <= -0.41
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_1 >  -0.41
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_11 >  -0.12
+|   |   |   |   |--- feature_14 <= 1.32
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  1.32
+|   |   |   |   |   |--- class: 1.0
+|--- feature_3 >  1.03
+|   |--- feature_15 <= -0.06
+|   |   |--- feature_5 <= 0.58
+|   |   |   |--- feature_14 <= 1.32
+|   |   |   |   |--- feature_9 <= 1.71
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_9 >  1.71
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_14 >  1.32
+|   |   |   |   |--- class: 1.0
+|   |   |--- feature_5 >  0.58
+|   |   |   |--- feature_3 <= 2.25
+|   |   |   |   |--- feature_5 <= 3.12
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_5 >  3.12
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_3 >  2.25
+|   |   |   |   |--- feature_5 <= 0.99
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_5 >  0.99
+|   |   |   |   |   |--- class: 1.0
+|   |--- feature_15 >  -0.06
+|   |   |--- feature_14 <= -0.01
+|   |   |   |--- feature_1 <= 0.07
+|   |   |   |   |--- feature_9 <= 0.37
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_9 >  0.37
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_1 >  0.07
+|   |   |   |   |--- feature_2 <= 1.28
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_2 >  1.28
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_14 >  -0.01
+|   |   |   |--- feature_8 <= -1.11
+|   |   |   |   |--- feature_0 <= 0.53
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_0 >  0.53
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_8 >  -1.11
+|   |   |   |   |--- feature_0 <= -0.79
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_0 >  -0.79
+|   |   |   |   |   |--- class: 0.0
+
+--------------------------------------------------------------------------------
+Tree 2 rules:
+|--- feature_6 <= -0.04
+|   |--- feature_14 <= 1.32
+|   |   |--- feature_11 <= -0.12
+|   |   |   |--- feature_0 <= 1.94
+|   |   |   |   |--- feature_14 <= -1.67
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  -1.67
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_0 >  1.94
+|   |   |   |   |--- feature_14 <= -1.01
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  -1.01
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_11 >  -0.12
+|   |   |   |--- feature_1 <= 11.14
+|   |   |   |   |--- feature_1 <= -0.05
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_1 >  -0.05
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_1 >  11.14
+|   |   |   |   |--- feature_1 <= 16.34
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_1 >  16.34
+|   |   |   |   |   |--- class: 0.0
+|   |--- feature_14 >  1.32
+|   |   |--- feature_2 <= 0.44
+|   |   |   |--- feature_12 <= 0.94
+|   |   |   |   |--- feature_2 <= 0.32
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_2 >  0.32
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_12 >  0.94
+|   |   |   |   |--- feature_3 <= -0.48
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  -0.48
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_2 >  0.44
+|   |   |   |--- feature_0 <= -0.04
+|   |   |   |   |--- feature_0 <= -1.17
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_0 >  -1.17
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_0 >  -0.04
+|   |   |   |   |--- feature_3 <= -0.57
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  -0.57
+|   |   |   |   |   |--- class: 1.0
+|--- feature_6 >  -0.04
+|   |--- feature_7 <= -0.26
+|   |   |--- feature_11 <= -0.12
+|   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |--- feature_5 <= 3.63
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_5 >  3.63
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |--- feature_3 <= -0.34
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  -0.34
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_11 >  -0.12
+|   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |--- feature_3 <= 1.03
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  1.03
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |--- feature_6 <= 1.96
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_6 >  1.96
+|   |   |   |   |   |--- class: 0.0
+|   |--- feature_7 >  -0.26
+|   |   |--- feature_0 <= 1.75
+|   |   |   |--- feature_12 <= 0.94
+|   |   |   |   |--- feature_14 <= 1.32
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  1.32
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_12 >  0.94
+|   |   |   |   |--- feature_3 <= 1.29
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  1.29
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_0 >  1.75
+|   |   |   |--- feature_3 <= -0.30
+|   |   |   |   |--- feature_0 <= 2.41
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_0 >  2.41
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_3 >  -0.30
+|   |   |   |   |--- feature_2 <= -1.06
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_2 >  -1.06
+|   |   |   |   |   |--- class: 1.0
+
+--------------------------------------------------------------------------------
+Tree 3 rules:
+|--- feature_3 <= 0.75
+|   |--- feature_15 <= -0.06
+|   |   |--- feature_3 <= -0.37
+|   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |--- feature_14 <= 1.32
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  1.32
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |--- feature_9 <= 0.37
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_9 >  0.37
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_3 >  -0.37
+|   |   |   |--- feature_5 <= 0.66
+|   |   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_5 >  0.66
+|   |   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |   |--- class: 1.0
+|   |--- feature_15 >  -0.06
+|   |   |--- feature_11 <= -0.12
+|   |   |   |--- feature_14 <= -1.67
+|   |   |   |   |--- feature_3 <= -0.14
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  -0.14
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_14 >  -1.67
+|   |   |   |   |--- feature_14 <= 1.32
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  1.32
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_11 >  -0.12
+|   |   |   |--- feature_13 <= 0.95
+|   |   |   |   |--- feature_14 <= 1.32
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  1.32
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_13 >  0.95
+|   |   |   |   |--- feature_1 <= 0.52
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_1 >  0.52
+|   |   |   |   |   |--- class: 0.0
+|--- feature_3 >  0.75
+|   |--- feature_3 <= 1.57
+|   |   |--- feature_14 <= 1.32
+|   |   |   |--- feature_6 <= -0.04
+|   |   |   |   |--- feature_13 <= 0.95
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_13 >  0.95
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_6 >  -0.04
+|   |   |   |   |--- feature_2 <= 0.56
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_2 >  0.56
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_14 >  1.32
+|   |   |   |--- feature_2 <= 0.44
+|   |   |   |   |--- feature_6 <= -0.04
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_6 >  -0.04
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_2 >  0.44
+|   |   |   |   |--- feature_3 <= 1.41
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_3 >  1.41
+|   |   |   |   |   |--- class: 0.0
+|   |--- feature_3 >  1.57
+|   |   |--- feature_0 <= -1.35
+|   |   |   |--- feature_0 <= -1.64
+|   |   |   |   |--- feature_1 <= -0.35
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_1 >  -0.35
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_0 >  -1.64
+|   |   |   |   |--- feature_0 <= -1.54
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_0 >  -1.54
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_0 >  -1.35
+|   |   |   |--- feature_1 <= -0.05
+|   |   |   |   |--- feature_14 <= -0.01
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  -0.01
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_1 >  -0.05
+|   |   |   |   |--- feature_7 <= -1.18
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_7 >  -1.18
+|   |   |   |   |   |--- class: 1.0
+
+--------------------------------------------------------------------------------
+Tree 4 rules:
+|--- feature_6 <= -0.04
+|   |--- feature_3 <= 1.13
+|   |   |--- feature_3 <= 0.41
+|   |   |   |--- feature_11 <= -0.12
+|   |   |   |   |--- feature_13 <= 0.95
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_13 >  0.95
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_11 >  -0.12
+|   |   |   |   |--- feature_7 <= -1.18
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_7 >  -1.18
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_3 >  0.41
+|   |   |   |--- feature_0 <= 1.75
+|   |   |   |   |--- feature_14 <= 1.32
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  1.32
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_0 >  1.75
+|   |   |   |   |--- feature_3 <= 0.96
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_3 >  0.96
+|   |   |   |   |   |--- class: 0.0
+|   |--- feature_3 >  1.13
+|   |   |--- feature_0 <= 3.82
+|   |   |   |--- feature_7 <= 0.35
+|   |   |   |   |--- feature_4 <= 1.87
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_4 >  1.87
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_7 >  0.35
+|   |   |   |   |--- feature_3 <= 2.29
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  2.29
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_0 >  3.82
+|   |   |   |--- feature_4 <= 0.40
+|   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_4 >  0.40
+|   |   |   |   |--- class: 0.0
+|--- feature_6 >  -0.04
+|   |--- feature_3 <= -0.26
+|   |   |--- feature_1 <= -0.02
+|   |   |   |--- feature_7 <= -0.56
+|   |   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_7 >  -0.56
+|   |   |   |   |--- feature_3 <= -0.42
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  -0.42
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_1 >  -0.02
+|   |   |   |--- feature_1 <= -0.02
+|   |   |   |   |--- feature_9 <= -0.96
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_9 >  -0.96
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_1 >  -0.02
+|   |   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |--- feature_3 >  -0.26
+|   |   |--- feature_11 <= -0.12
+|   |   |   |--- feature_5 <= 0.56
+|   |   |   |   |--- feature_7 <= 0.05
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_7 >  0.05
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_5 >  0.56
+|   |   |   |   |--- feature_1 <= -0.42
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_1 >  -0.42
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_11 >  -0.12
+|   |   |   |--- feature_2 <= 0.68
+|   |   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_2 >  0.68
+|   |   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |   |--- class: 1.0
+
+--------------------------------------------------------------------------------
+Tree 5 rules:
+|--- feature_3 <= 0.95
+|   |--- feature_3 <= -0.26
+|   |   |--- feature_5 <= 0.48
+|   |   |   |--- feature_3 <= -0.64
+|   |   |   |   |--- feature_2 <= -1.72
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_2 >  -1.72
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_3 >  -0.64
+|   |   |   |   |--- feature_0 <= -1.54
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_0 >  -1.54
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_5 >  0.48
+|   |   |   |--- feature_1 <= 7.12
+|   |   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_1 >  7.12
+|   |   |   |   |--- class: 1.0
+|   |--- feature_3 >  -0.26
+|   |   |--- feature_14 <= 1.32
+|   |   |   |--- feature_13 <= 0.95
+|   |   |   |   |--- feature_6 <= -0.04
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_6 >  -0.04
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_13 >  0.95
+|   |   |   |   |--- feature_14 <= -0.84
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_14 >  -0.84
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_14 >  1.32
+|   |   |   |--- feature_6 <= -0.04
+|   |   |   |   |--- feature_13 <= 0.95
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_13 >  0.95
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_6 >  -0.04
+|   |   |   |   |--- feature_3 <= 0.64
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_3 >  0.64
+|   |   |   |   |   |--- class: 1.0
+|--- feature_3 >  0.95
+|   |--- feature_8 <= 0.55
+|   |   |--- feature_3 <= 2.24
+|   |   |   |--- feature_14 <= 1.32
+|   |   |   |   |--- feature_13 <= 0.95
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_13 >  0.95
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_14 >  1.32
+|   |   |   |   |--- feature_2 <= -0.16
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_2 >  -0.16
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_3 >  2.24
+|   |   |   |--- feature_2 <= -1.60
+|   |   |   |   |--- feature_15 <= -2.08
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_15 >  -2.08
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_2 >  -1.60
+|   |   |   |   |--- feature_13 <= -0.16
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_13 >  -0.16
+|   |   |   |   |   |--- class: 1.0
+|   |--- feature_8 >  0.55
+|   |   |--- feature_9 <= 1.71
+|   |   |   |--- feature_9 <= 0.37
+|   |   |   |   |--- feature_3 <= 1.35
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  1.35
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_9 >  0.37
+|   |   |   |   |--- feature_3 <= 1.70
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  1.70
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_9 >  1.71
+|   |   |   |--- feature_3 <= 1.36
+|   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_3 >  1.36
+|   |   |   |   |--- feature_3 <= 1.63
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_3 >  1.63
+|   |   |   |   |   |--- class: 0.0
+
+--------------------------------------------------------------------------------
+Tree 6 rules:
+|--- feature_3 <= 0.81
+|   |--- feature_4 <= -0.41
+|   |   |--- feature_6 <= -0.04
+|   |   |   |--- feature_11 <= -0.12
+|   |   |   |   |--- feature_14 <= -1.67
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  -1.67
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_11 >  -0.12
+|   |   |   |   |--- feature_13 <= 0.95
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_13 >  0.95
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_6 >  -0.04
+|   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |--- feature_7 <= 0.05
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_7 >  0.05
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |--- feature_0 <= -1.64
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_0 >  -1.64
+|   |   |   |   |   |--- class: 1.0
+|   |--- feature_4 >  -0.41
+|   |   |--- feature_14 <= 1.32
+|   |   |   |--- feature_0 <= 1.84
+|   |   |   |   |--- feature_6 <= -0.04
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_6 >  -0.04
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_0 >  1.84
+|   |   |   |   |--- feature_7 <= 0.05
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_7 >  0.05
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_14 >  1.32
+|   |   |   |--- feature_15 <= -2.08
+|   |   |   |   |--- feature_5 <= 0.57
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_5 >  0.57
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_15 >  -2.08
+|   |   |   |   |--- feature_5 <= 0.57
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_5 >  0.57
+|   |   |   |   |   |--- class: 1.0
+|--- feature_3 >  0.81
+|   |--- feature_8 <= 0.55
+|   |   |--- feature_13 <= 0.95
+|   |   |   |--- feature_5 <= 0.39
+|   |   |   |   |--- feature_0 <= 3.63
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_0 >  3.63
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_5 >  0.39
+|   |   |   |   |--- feature_11 <= -0.12
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_11 >  -0.12
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_13 >  0.95
+|   |   |   |--- feature_5 <= 0.33
+|   |   |   |   |--- feature_8 <= -1.11
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_8 >  -1.11
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_5 >  0.33
+|   |   |   |   |--- class: 1.0
+|   |--- feature_8 >  0.55
+|   |   |--- feature_6 <= -0.04
+|   |   |   |--- feature_3 <= 1.49
+|   |   |   |   |--- feature_4 <= -0.41
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_4 >  -0.41
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_3 >  1.49
+|   |   |   |   |--- feature_13 <= -0.16
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_13 >  -0.16
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_6 >  -0.04
+|   |   |   |--- feature_7 <= -0.56
+|   |   |   |   |--- feature_5 <= 2.89
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_5 >  2.89
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_7 >  -0.56
+|   |   |   |   |--- feature_0 <= -1.17
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_0 >  -1.17
+|   |   |   |   |   |--- class: 0.0
+
+--------------------------------------------------------------------------------
+Tree 7 rules:
+|--- feature_14 <= 1.32
+|   |--- feature_11 <= -0.12
+|   |   |--- feature_5 <= -0.28
+|   |   |   |--- feature_13 <= 0.95
+|   |   |   |   |--- feature_3 <= 0.43
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  0.43
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_13 >  0.95
+|   |   |   |   |--- feature_1 <= -0.17
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_1 >  -0.17
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_5 >  -0.28
+|   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |--- feature_4 <= 0.57
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_4 >  0.57
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |--- feature_14 <= -1.34
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_14 >  -1.34
+|   |   |   |   |   |--- class: 1.0
+|   |--- feature_11 >  -0.12
+|   |   |--- feature_6 <= -0.04
+|   |   |   |--- feature_12 <= 0.94
+|   |   |   |   |--- feature_1 <= -0.24
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_1 >  -0.24
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_12 >  0.94
+|   |   |   |   |--- feature_3 <= 1.62
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  1.62
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_6 >  -0.04
+|   |   |   |--- feature_3 <= 0.86
+|   |   |   |   |--- feature_3 <= -0.00
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  -0.00
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_3 >  0.86
+|   |   |   |   |--- feature_5 <= 3.05
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_5 >  3.05
+|   |   |   |   |   |--- class: 1.0
+|--- feature_14 >  1.32
+|   |--- feature_3 <= -0.30
+|   |   |--- feature_9 <= -0.96
+|   |   |   |--- feature_8 <= -1.11
+|   |   |   |   |--- feature_14 <= 1.65
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  1.65
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_8 >  -1.11
+|   |   |   |   |--- feature_4 <= -0.41
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_4 >  -0.41
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_9 >  -0.96
+|   |   |   |--- feature_2 <= -0.16
+|   |   |   |   |--- feature_5 <= 0.46
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_5 >  0.46
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_2 >  -0.16
+|   |   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |--- feature_3 >  -0.30
+|   |   |--- feature_4 <= 0.89
+|   |   |   |--- feature_2 <= 0.44
+|   |   |   |   |--- feature_5 <= 1.40
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_5 >  1.40
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_2 >  0.44
+|   |   |   |   |--- feature_7 <= 0.96
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_7 >  0.96
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_4 >  0.89
+|   |   |   |--- feature_4 <= 1.22
+|   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_4 >  1.22
+|   |   |   |   |--- feature_15 <= -2.08
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_15 >  -2.08
+|   |   |   |   |   |--- class: 1.0
+
+--------------------------------------------------------------------------------
+Tree 8 rules:
+|--- feature_6 <= -0.04
+|   |--- feature_3 <= 1.14
+|   |   |--- feature_13 <= 0.95
+|   |   |   |--- feature_11 <= -0.12
+|   |   |   |   |--- feature_3 <= -0.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  -0.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_11 >  -0.12
+|   |   |   |   |--- feature_14 <= 1.32
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  1.32
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_13 >  0.95
+|   |   |   |--- feature_7 <= 0.96
+|   |   |   |   |--- feature_9 <= 0.37
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_9 >  0.37
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_7 >  0.96
+|   |   |   |   |--- feature_12 <= 0.94
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_12 >  0.94
+|   |   |   |   |   |--- class: 0.0
+|   |--- feature_3 >  1.14
+|   |   |--- feature_14 <= -1.01
+|   |   |   |--- feature_3 <= 3.42
+|   |   |   |   |--- feature_7 <= -1.18
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_7 >  -1.18
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_3 >  3.42
+|   |   |   |   |--- feature_3 <= 6.40
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_3 >  6.40
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_14 >  -1.01
+|   |   |   |--- feature_8 <= -1.11
+|   |   |   |   |--- feature_11 <= -0.12
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_11 >  -0.12
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_8 >  -1.11
+|   |   |   |   |--- feature_13 <= -0.16
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_13 >  -0.16
+|   |   |   |   |   |--- class: 0.0
+|--- feature_6 >  -0.04
+|   |--- feature_5 <= 0.60
+|   |   |--- feature_5 <= 0.46
+|   |   |   |--- feature_14 <= 1.32
+|   |   |   |   |--- feature_14 <= -1.17
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  -1.17
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_14 >  1.32
+|   |   |   |   |--- feature_11 <= -0.12
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_11 >  -0.12
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_5 >  0.46
+|   |   |   |--- feature_3 <= -0.44
+|   |   |   |   |--- feature_3 <= -0.63
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  -0.63
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_3 >  -0.44
+|   |   |   |   |--- feature_1 <= -0.37
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_1 >  -0.37
+|   |   |   |   |   |--- class: 1.0
+|   |--- feature_5 >  0.60
+|   |   |--- feature_3 <= -0.05
+|   |   |   |--- feature_11 <= -0.12
+|   |   |   |   |--- feature_0 <= -1.64
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_0 >  -1.64
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_11 >  -0.12
+|   |   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_3 >  -0.05
+|   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |--- feature_5 <= 3.43
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_5 >  3.43
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |--- feature_2 <= -1.00
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_2 >  -1.00
+|   |   |   |   |   |--- class: 1.0
+
+--------------------------------------------------------------------------------
+Tree 9 rules:
+|--- feature_5 <= -0.12
+|   |--- feature_1 <= -0.24
+|   |   |--- feature_3 <= 1.13
+|   |   |   |--- feature_14 <= 1.32
+|   |   |   |   |--- feature_1 <= -0.42
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_1 >  -0.42
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_14 >  1.32
+|   |   |   |   |--- feature_8 <= -1.11
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_8 >  -1.11
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_3 >  1.13
+|   |   |   |--- feature_11 <= -0.12
+|   |   |   |   |--- feature_2 <= 1.64
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_2 >  1.64
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_11 >  -0.12
+|   |   |   |   |--- feature_13 <= -0.16
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_13 >  -0.16
+|   |   |   |   |   |--- class: 0.0
+|   |--- feature_1 >  -0.24
+|   |   |--- feature_3 <= 0.94
+|   |   |   |--- feature_3 <= -0.40
+|   |   |   |   |--- feature_13 <= 0.95
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_13 >  0.95
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_3 >  -0.40
+|   |   |   |   |--- feature_0 <= 1.84
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_0 >  1.84
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_3 >  0.94
+|   |   |   |--- feature_7 <= -0.56
+|   |   |   |   |--- feature_0 <= -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_0 >  -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_7 >  -0.56
+|   |   |   |   |--- feature_3 <= 1.40
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  1.40
+|   |   |   |   |   |--- class: 1.0
+|--- feature_5 >  -0.12
+|   |--- feature_15 <= -1.07
+|   |   |--- feature_3 <= 0.61
+|   |   |   |--- feature_11 <= -0.12
+|   |   |   |   |--- feature_14 <= 1.32
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  1.32
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_11 >  -0.12
+|   |   |   |   |--- feature_13 <= 0.95
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_13 >  0.95
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_3 >  0.61
+|   |   |   |--- feature_0 <= 2.31
+|   |   |   |   |--- feature_5 <= 0.58
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_5 >  0.58
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_0 >  2.31
+|   |   |   |   |--- feature_5 <= 1.53
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_5 >  1.53
+|   |   |   |   |   |--- class: 1.0
+|   |--- feature_15 >  -1.07
+|   |   |--- feature_11 <= -0.12
+|   |   |   |--- feature_3 <= -0.38
+|   |   |   |   |--- feature_14 <= -1.34
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  -1.34
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_3 >  -0.38
+|   |   |   |   |--- feature_1 <= 0.07
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_1 >  0.07
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_11 >  -0.12
+|   |   |   |--- feature_7 <= -1.18
+|   |   |   |   |--- feature_14 <= 0.49
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_14 >  0.49
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_7 >  -1.18
+|   |   |   |   |--- feature_3 <= -0.38
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  -0.38
+|   |   |   |   |   |--- class: 1.0
+
+--------------------------------------------------------------------------------
+Tree 10 rules:
+|--- feature_5 <= -0.12
+|   |--- feature_3 <= 1.13
+|   |   |--- feature_11 <= -0.12
+|   |   |   |--- feature_0 <= 1.84
+|   |   |   |   |--- feature_3 <= -0.14
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  -0.14
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_0 >  1.84
+|   |   |   |   |--- feature_2 <= -0.28
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_2 >  -0.28
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_11 >  -0.12
+|   |   |   |--- feature_3 <= 0.41
+|   |   |   |   |--- feature_0 <= 2.69
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_0 >  2.69
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_3 >  0.41
+|   |   |   |   |--- feature_14 <= 1.32
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  1.32
+|   |   |   |   |   |--- class: 1.0
+|   |--- feature_3 >  1.13
+|   |   |--- feature_1 <= 0.07
+|   |   |   |--- feature_3 <= 2.24
+|   |   |   |   |--- feature_11 <= -0.12
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_11 >  -0.12
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_3 >  2.24
+|   |   |   |   |--- feature_13 <= -0.16
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_13 >  -0.16
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_1 >  0.07
+|   |   |   |--- feature_0 <= 2.93
+|   |   |   |   |--- feature_13 <= -0.16
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_13 >  -0.16
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_0 >  2.93
+|   |   |   |   |--- feature_3 <= 1.34
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  1.34
+|   |   |   |   |   |--- class: 1.0
+|--- feature_5 >  -0.12
+|   |--- feature_14 <= 1.32
+|   |   |--- feature_14 <= 0.65
+|   |   |   |--- feature_11 <= -0.12
+|   |   |   |   |--- feature_4 <= 0.89
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_4 >  0.89
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_11 >  -0.12
+|   |   |   |   |--- feature_3 <= -0.06
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  -0.06
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_14 >  0.65
+|   |   |   |--- feature_11 <= -0.12
+|   |   |   |   |--- feature_1 <= -0.22
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_1 >  -0.22
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_11 >  -0.12
+|   |   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |--- feature_14 >  1.32
+|   |   |--- feature_5 <= 1.95
+|   |   |   |--- feature_3 <= -0.37
+|   |   |   |   |--- feature_7 <= 1.27
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_7 >  1.27
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_3 >  -0.37
+|   |   |   |   |--- feature_3 <= 0.68
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_3 >  0.68
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_5 >  1.95
+|   |   |   |--- feature_7 <= 0.35
+|   |   |   |   |--- feature_5 <= 8.01
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_5 >  8.01
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_7 >  0.35
+|   |   |   |   |--- feature_3 <= -0.63
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  -0.63
+|   |   |   |   |   |--- class: 1.0
+
+--------------------------------------------------------------------------------
+Tree 11 rules:
+|--- feature_3 <= 1.03
+|   |--- feature_0 <= 1.84
+|   |   |--- feature_14 <= 1.32
+|   |   |   |--- feature_3 <= -0.29
+|   |   |   |   |--- feature_15 <= -0.06
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_15 >  -0.06
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_3 >  -0.29
+|   |   |   |   |--- feature_15 <= -0.06
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_15 >  -0.06
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_14 >  1.32
+|   |   |   |--- feature_2 <= -0.04
+|   |   |   |   |--- feature_3 <= -0.32
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  -0.32
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_2 >  -0.04
+|   |   |   |   |--- feature_5 <= 0.73
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_5 >  0.73
+|   |   |   |   |   |--- class: 1.0
+|   |--- feature_0 >  1.84
+|   |   |--- feature_5 <= 1.51
+|   |   |   |--- feature_8 <= 0.55
+|   |   |   |   |--- feature_12 <= 0.94
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_12 >  0.94
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_8 >  0.55
+|   |   |   |   |--- class: 0.0
+|   |   |--- feature_5 >  1.51
+|   |   |   |--- feature_2 <= -0.70
+|   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_2 >  -0.70
+|   |   |   |   |--- feature_3 <= -0.31
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  -0.31
+|   |   |   |   |   |--- class: 1.0
+|--- feature_3 >  1.03
+|   |--- feature_6 <= -0.04
+|   |   |--- feature_8 <= 0.55
+|   |   |   |--- feature_13 <= 0.95
+|   |   |   |   |--- feature_8 <= -1.11
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_8 >  -1.11
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_13 >  0.95
+|   |   |   |   |--- feature_3 <= 2.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  2.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_8 >  0.55
+|   |   |   |--- feature_13 <= 0.95
+|   |   |   |   |--- feature_3 <= 1.66
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  1.66
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_13 >  0.95
+|   |   |   |   |--- feature_14 <= -0.01
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  -0.01
+|   |   |   |   |   |--- class: 0.0
+|   |--- feature_6 >  -0.04
+|   |   |--- feature_2 <= 0.56
+|   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |--- feature_4 <= 0.89
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_4 >  0.89
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |--- feature_14 <= -1.67
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  -1.67
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_2 >  0.56
+|   |   |   |--- feature_7 <= 0.66
+|   |   |   |   |--- feature_1 <= 4.05
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_1 >  4.05
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_7 >  0.66
+|   |   |   |   |--- class: 1.0
+
+--------------------------------------------------------------------------------
+Tree 12 rules:
+|--- feature_14 <= 1.32
+|   |--- feature_3 <= 1.03
+|   |   |--- feature_5 <= -0.31
+|   |   |   |--- feature_14 <= -1.67
+|   |   |   |   |--- feature_3 <= 0.02
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  0.02
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_14 >  -1.67
+|   |   |   |   |--- feature_13 <= 0.95
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_13 >  0.95
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_5 >  -0.31
+|   |   |   |--- feature_11 <= -0.12
+|   |   |   |   |--- feature_4 <= 0.24
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_4 >  0.24
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_11 >  -0.12
+|   |   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |--- feature_3 >  1.03
+|   |   |--- feature_0 <= 1.75
+|   |   |   |--- feature_13 <= -0.16
+|   |   |   |   |--- feature_3 <= 2.24
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  2.24
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_13 >  -0.16
+|   |   |   |   |--- feature_4 <= 1.87
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_4 >  1.87
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_0 >  1.75
+|   |   |   |--- feature_2 <= 0.56
+|   |   |   |   |--- feature_14 <= -0.67
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_14 >  -0.67
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_2 >  0.56
+|   |   |   |   |--- feature_7 <= 0.05
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_7 >  0.05
+|   |   |   |   |   |--- class: 1.0
+|--- feature_14 >  1.32
+|   |--- feature_6 <= -0.04
+|   |   |--- feature_3 <= -0.22
+|   |   |   |--- feature_2 <= -0.04
+|   |   |   |   |--- feature_11 <= -0.12
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_11 >  -0.12
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_2 >  -0.04
+|   |   |   |   |--- feature_9 <= 0.37
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_9 >  0.37
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_3 >  -0.22
+|   |   |   |--- feature_11 <= -0.12
+|   |   |   |   |--- feature_2 <= 0.44
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_2 >  0.44
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_11 >  -0.12
+|   |   |   |   |--- feature_2 <= -1.18
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_2 >  -1.18
+|   |   |   |   |   |--- class: 1.0
+|   |--- feature_6 >  -0.04
+|   |   |--- feature_11 <= -0.12
+|   |   |   |--- feature_1 <= -0.40
+|   |   |   |   |--- feature_2 <= 1.16
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_2 >  1.16
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_1 >  -0.40
+|   |   |   |   |--- feature_3 <= -0.37
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  -0.37
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_11 >  -0.12
+|   |   |   |--- feature_1 <= -0.35
+|   |   |   |   |--- feature_5 <= 0.37
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_5 >  0.37
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_1 >  -0.35
+|   |   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |   |--- class: 1.0
+
+--------------------------------------------------------------------------------
+Tree 13 rules:
+|--- feature_6 <= -0.04
+|   |--- feature_0 <= 2.03
+|   |   |--- feature_3 <= 0.95
+|   |   |   |--- feature_0 <= -1.73
+|   |   |   |   |--- feature_3 <= -0.61
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  -0.61
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_0 >  -1.73
+|   |   |   |   |--- feature_13 <= 0.95
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_13 >  0.95
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_3 >  0.95
+|   |   |   |--- feature_4 <= 4.15
+|   |   |   |   |--- feature_8 <= 0.55
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_8 >  0.55
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_4 >  4.15
+|   |   |   |   |--- feature_0 <= -0.84
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_0 >  -0.84
+|   |   |   |   |   |--- class: 0.0
+|   |--- feature_0 >  2.03
+|   |   |--- feature_8 <= -1.11
+|   |   |   |--- feature_2 <= -1.36
+|   |   |   |   |--- feature_3 <= -0.64
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  -0.64
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_2 >  -1.36
+|   |   |   |   |--- feature_0 <= 3.91
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_0 >  3.91
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_8 >  -1.11
+|   |   |   |--- feature_3 <= -0.37
+|   |   |   |   |--- feature_14 <= -1.01
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  -1.01
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_3 >  -0.37
+|   |   |   |   |--- feature_0 <= 4.10
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_0 >  4.10
+|   |   |   |   |   |--- class: 1.0
+|--- feature_6 >  -0.04
+|   |--- feature_3 <= -0.38
+|   |   |--- feature_5 <= 0.67
+|   |   |   |--- feature_15 <= -1.07
+|   |   |   |   |--- feature_1 <= 0.24
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_1 >  0.24
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_15 >  -1.07
+|   |   |   |   |--- feature_14 <= 1.32
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  1.32
+|   |   |   |   |   |--- class: 1.0
+|   |   |--- feature_5 >  0.67
+|   |   |   |--- feature_5 <= 3.34
+|   |   |   |   |--- feature_7 <= 0.96
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_7 >  0.96
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_5 >  3.34
+|   |   |   |   |--- feature_2 <= -1.24
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_2 >  -1.24
+|   |   |   |   |   |--- class: 0.0
+|   |--- feature_3 >  -0.38
+|   |   |--- feature_15 <= -1.07
+|   |   |   |--- feature_11 <= -0.12
+|   |   |   |   |--- feature_3 <= 0.49
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  0.49
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_11 >  -0.12
+|   |   |   |   |--- feature_2 <= 0.68
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_2 >  0.68
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_15 >  -1.07
+|   |   |   |--- feature_11 <= -0.12
+|   |   |   |   |--- feature_5 <= 0.51
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_5 >  0.51
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_11 >  -0.12
+|   |   |   |   |--- feature_1 <= -0.33
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_1 >  -0.33
+|   |   |   |   |   |--- class: 1.0
+
+--------------------------------------------------------------------------------
+Tree 14 rules:
+
+|--- feature_15 <= -0.06
+|   |--- feature_11 <= -0.12
+|   |   |--- feature_15 <= -1.07
+|   |   |   |--- feature_1 <= -0.46
+|   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_1 >  -0.46
+|   |   |   |   |--- feature_5 <= 3.34
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_5 >  3.34
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_15 >  -1.07
+|   |   |   |--- feature_4 <= 1.22
+|   |   |   |   |--- feature_6 <= 3.95
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_6 >  3.95
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_4 >  1.22
+|   |   |   |   |--- feature_14 <= -1.17
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_14 >  -1.17
+|   |   |   |   |   |--- class: 0.0
+|   |--- feature_11 >  -0.12
+|   |   |--- feature_5 <= 0.68
+|   |   |   |--- feature_12 <= 0.94
+|   |   |   |   |--- feature_3 <= -0.44
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  -0.44
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_12 >  0.94
+|   |   |   |   |--- feature_5 <= 0.52
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_5 >  0.52
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_5 >  0.68
+|   |   |   |--- feature_3 <= 0.86
+|   |   |   |   |--- feature_14 <= 1.32
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_14 >  1.32
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_3 >  0.86
+|   |   |   |   |--- feature_3 <= 2.28
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  2.28
+|   |   |   |   |   |--- class: 1.0
+|--- feature_15 >  -0.06
+|   |--- feature_11 <= -0.12
+|   |   |--- feature_2 <= -1.48
+|   |   |   |--- feature_13 <= 0.95
+|   |   |   |   |--- feature_3 <= 0.11
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_3 >  0.11
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |--- feature_13 >  0.95
+|   |   |   |   |--- feature_14 <= -1.01
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_14 >  -1.01
+|   |   |   |   |   |--- class: 0.0
+|   |   |--- feature_2 >  -1.48
+|   |   |   |--- feature_13 <= 0.95
+|   |   |   |   |--- feature_12 <= 0.94
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_12 >  0.94
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_13 >  0.95
+|   |   |   |   |--- feature_1 <= -0.42
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_1 >  -0.42
+|   |   |   |   |   |--- class: 0.0
+|   |--- feature_11 >  -0.12
+|   |   |--- feature_3 <= 1.03
+|   |   |   |--- feature_0 <= 2.46
+|   |   |   |   |--- feature_13 <= 0.95
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_13 >  0.95
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_0 >  2.46
+|   |   |   |   |--- class: 1.0
+|   |   |--- feature_3 >  1.03
+|   |   |   |--- feature_1 <= 0.74
+|   |   |   |   |--- feature_8 <= 0.55
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |   |--- feature_8 >  0.55
+|   |   |   |   |   |--- class: 0.0
+|   |   |   |--- feature_1 >  0.74
+|   |   |   |   |--- feature_13 <= -0.16
+|   |   |   |   |   |--- class: 1.0
+|   |   |   |   |--- feature_13 >  -0.16
+|   |   |   |   |   |--- class: 0.0
+
+--------------------------------------------------------------------------------
+
+## CART tree rules end
+
+
+Based on the above information, please learn the rules evolving process and help me design a better rule like what cart used for inference to achieve higher performance.
+please not just copy, please refine these rules and create a new better one.
+The new rule aims to divide the training space into several regions, where each region is denoted by a unique leaf node id.
+The number of leaf nodes should no more than 32.
+Please return the dict format of rule, the format should be strictly like: 
+
+self.tree = {
+        "feature": 11,
+        "threshold": -0.78,
+        "operator": "<=",
+        "left": {"id": "leaf_1"},  
+        "right": {
+            "feature": 7,
+            "threshold": -0.46,
+            "operator": "<=",
+            "left": {"id": "leaf_2"},  
+            "right": {"id": "leaf_3"}, 
+        },
+        }
+
+Please note that each leaf id node can only appear once, for example, "id": "leaf_1" can only appear once.
+Thus you only need to return the leaf nodes, rather than the true predictions.
