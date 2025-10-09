@@ -4,7 +4,7 @@ import os
 import argparse
 import re
 import warnings
-
+from dataset_config import dataset_params, default_params
 # Configure argument parser
 parser = argparse.ArgumentParser()
 parser.add_argument('--num_classes', type=str, default='1')
@@ -144,21 +144,12 @@ def calculate_metrics(test_logit, labels):
         
         # Dataset-specific standardization coefficients
         stds = {
-            'yahoo': 0.9832039,
             'california_housing': 1.1572733,
             'Diamonds': 3992.340456361325,
-            'microsoft': 0.8221269,
-            'year': 10.928321,
             'house_16H_reg': 52647.997397551575,
             'cpu_act': 19.073711119270317,
-            'cpus': 19.073711119270317,
             'credit_reg': 0.5,
             'fried': 5.024967177995651,
-            'com': 16.99697446370524,
-            'black2': 0.9991533891210155,
-            'compass': 0.4999982725936728,
-            'as': 0.5497520736115297,
-            'onp': 12272.089656522805
         }
         
         # Extract dataset name and apply standardization
@@ -264,7 +255,9 @@ if __name__ == "__main__":
         
         # Evaluate fused model
         # Adjust fusion weight i as needed
-        i = 0.2
+        params = dataset_params.get(args.dataset, default_params)
+        i = params['eta']
+        #i = 0.2
         fused_class_distribution = i * LM_class_distribution + RF_class_distribution
         fused_results, fused_metric_name = calculate_metrics(fused_class_distribution, test_label)
         print(f'Fused Accuracy MEAN: {fused_results[0]}')
