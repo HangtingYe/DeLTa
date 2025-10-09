@@ -6,8 +6,8 @@ def start():
     from dataset_config import dataset_params, default_params
 
     # List of datasets to process (uses keys from dataset_params)
-    datasets = list(dataset_params.keys())
-    #datasets = ['california_housing']
+    # datasets = list(dataset_params.keys())
+    datasets = ['house_16H_reg']
     
     for dataset in datasets:
         # Get parameters for current dataset or use defaults

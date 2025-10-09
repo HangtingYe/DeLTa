@@ -10,7 +10,8 @@ def start():
     shot_range = ['full']
     n_answers = 10
     model_type = 'DeLTa'
-    datasets = list(dataset_params.keys())
+    # datasets = list(dataset_params.keys())
+    datasets = ['house_16H_reg']
     
     for dataset in datasets:
         # Get dataset-specific parameters or use defaults
