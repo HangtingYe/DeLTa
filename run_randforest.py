@@ -7,8 +7,7 @@ def start():
 
     # List of datasets to process (uses keys from dataset_params)
     # datasets = list(dataset_params.keys())
-    datasets = ['house_16H_reg']
-    
+    datasets = ['bank']
     for dataset in datasets:
         # Get parameters for current dataset or use defaults
         params = dataset_params.get(dataset, default_params)
@@ -17,7 +16,7 @@ def start():
         n_estimators_list = params['n_estimators']
         
         # Create output directory if it doesn't exist
-        output_dir = f"model/classical_methods/data/{dataset}"
+        output_dir = f"results/{dataset}"
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         

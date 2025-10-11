@@ -1,3 +1,12 @@
+
+""" 
+If you want to download TabPFN to your local machine for regression tasks, 
+please download the TabPFN weights to the "DeLTa-main/model/models/models_diff/" directory 
+and set the environment variable with the command: 
+export TABPFN_MODEL_CACHE_DIR="DeLTa-main/model/models/models_diff/". 
+"""
+
+
 import os
 import subprocess
 import argparse
@@ -5,13 +14,14 @@ import argparse
 def start():
     # Dataset-specific configuration
     from dataset_config import dataset_params, default_params
+
+    # datasets = list(dataset_params.keys())
+    datasets = ['bank']
     
     # Common parameters
     shot_range = ['full']
     n_answers = 10
     model_type = 'DeLTa'
-    # datasets = list(dataset_params.keys())
-    datasets = ['house_16H_reg']
     
     for dataset in datasets:
         # Get dataset-specific parameters or use defaults
@@ -23,7 +33,7 @@ def start():
         small_model = params['small_model']
         
         # Build base classify rule path
-        base_classify_rule = f'model.classical_methods.llm_rule.{dataset}.'
+        base_classify_rule = f'model.llm_rule.{dataset}.'
         
         # Iterate through all parameter combinations 
         for tree in n_estimators:
@@ -54,10 +64,10 @@ def start():
                                 '--gpu', '0',
                                 '--cat_policy', 'ordinal',
                                 '--save_npy',
-                                f'model/classical_methods/data/{dataset}/RF_md{md}_ml{ml}_tree{tree}_full_{small_model}_{j}'
+                                f'results/{dataset}/RF_md{md}_ml{ml}_tree{tree}_full_{small_model}_{j}'
                             ]
                             
-                            log_file = f"model/classical_methods/data/{dataset}/RF_md{md}_ml{ml}_tree{tree}_{dataset}_shotfull_{j}_{small_model}.log"
+                            log_file = f"results/{dataset}/RF_md{md}_ml{ml}_tree{tree}_{dataset}_shotfull_{j}_{small_model}.log"
                             cmds.append((cmd_parts, log_file))
                     
                     # Execute all commands for current parameter combination

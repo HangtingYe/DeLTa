@@ -9,7 +9,7 @@ def start():
     # Common parameters
     n_ensembles = ['9']
     # datasets = list(dataset_params.keys())
-    datasets = ['house_16H_reg']
+    datasets = ['bank']
     
     for dataset in datasets:
         # Get dataset-specific parameters or use defaults
@@ -29,7 +29,6 @@ def start():
                             'python', 'ensemble.py',
                             '--small_model', small_model,
                             '--num_classes', str(num_class),
-                            '--directory', f'model/classical_methods/data/{dataset}/RF',
                             '--n_ensemble', n_ensemble,
                             '--md', str(md),
                             '--ml', str(ml),
@@ -37,7 +36,7 @@ def start():
                             '--dataset', dataset,
                         ]
 
-                        log_file = f'model/classical_methods/data/{dataset}/e_RF_md{md}_ml{ml}_tree{tree}_{dataset}_{small_model}_{n_ensemble}.log'  
+                        log_file = f'results/{dataset}/e_RF_md{md}_ml{ml}_tree{tree}_{dataset}_{small_model}_{n_ensemble}.log'  
                         
                         # Execute command
                         try:
