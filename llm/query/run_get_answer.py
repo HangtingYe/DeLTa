@@ -11,7 +11,7 @@ sys.path.append(project_root)
 from dataset_config import dataset_params, default_params
 
 def start():
-    datasets = ['adult']
+    datasets = ['bank']
     cmds = []
     for dataset in datasets:
         params = dataset_params.get(dataset, default_params)
@@ -43,4 +43,5 @@ def start():
 
 
 if __name__ == "__main__":
+
     start()
