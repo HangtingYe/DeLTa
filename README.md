@@ -8,40 +8,64 @@
   <p style="margin-top: 8px; font-weight: 500;">The DeLTa framework</p>
 </div>
 
-<div style="text-align: center; margin: 20px 0;">
-  <img src="picture/radio-1.png" alt="Test NRMSE performance on regression tasks" style="max-width: 100%; height: auto;">
-  <p style="margin-top: 8px; font-weight: 500;">Test NRMSE(↓) performance of DeLTa and LLM-based baseline methods on regression tasks.</p>
-</div>
 
-<div style="text-align: center; margin: 20px 0;">
-  <img src="picture/nonLLM-1.png" alt="Test performance on classification and regression tasks" style="max-width: 100%; height: auto;">
-  <p style="margin-top: 8px; font-weight: 500;">Test performance of DeLTa and non-LLM baseline methods on classification and regression tasks.</p>
-</div>
+## Quick Start
 
-### Quick Start
 
+#### 1. Obtain the rules of the RandomForest.
+ 
 ```bash
-export TABPFN_MODEL_CACHE_DIR="DeLTa-main/model/models/models_diff/"
+cd DeLTa-main
+python run_randforest.py
+```
+#### 2. Fit the negative gradient.
+    
+```bash
+cd DeLTa-main
+python run.py
+```
+#### 3. run  error correction
+    
+```bash
+cd DeLTa-main
+python run_ensemble.py
 ```
 
-#### 1. Obtain the rules of the random forest.
+## Including the steps to query the LLM yourself
+
+#### 1. Obtain the rules of the RandomForest.
  
 ```bash
 cd DeLTa-main
 python run_randforest.py
 ```
 
-#### 2. Build a prompt and place it in DeLTa/model/classical_methods/data/{dataname}/prompts.
+#### 2. Build prompts
 
+```bash
+cd DeLTa-main/llm/get_prompts
+python run_get_prompt.py
+```
+
+Get tree rules
+```bash
+cd DeLTa-main/llm
+python get_trees.py
+```
 
 #### 3. query the LLM and get answer
 ```bash
-cd DeLTa-main/model/classical_methods
+cd DeLTa-main/llm/query
 python run_get_answer.py
 ```
 
-#### 4. Place the generated rules in a Python file within 
-the directory DeLTa/model/classical_methods/llm_rule
+#### 4. Place the generated rules in a Python file within the directory DeLTa-main/model/llm_rule
+
+```bash
+cd DeLTa-main/llm
+python get_trees.py
+```
+
 #### 5. Fit the negative gradient.
     
 ```bash
@@ -54,6 +78,7 @@ python run.py
 cd DeLTa-main
 python run_ensemble.py
 ```
+
 Datasets are accessible via [Google Drive](https://drive.google.com/open?id=1JIsivUoM4qeM3MY9jNpXjJJH4VplndCy&usp=drive_fs).
 
 
