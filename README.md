@@ -47,11 +47,6 @@ cd DeLTa-main/llm/get_prompts
 python run_get_prompt.py
 ```
 
-Get tree rules
-```bash
-cd DeLTa-main/llm
-python get_trees.py
-```
 
 #### 3. query the LLM and get answer
 ```bash
