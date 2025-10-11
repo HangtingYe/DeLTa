@@ -8,7 +8,6 @@ from dataset_config import dataset_params, default_params
 # Configure argument parser
 parser = argparse.ArgumentParser()
 parser.add_argument('--num_classes', type=str, default='1')
-parser.add_argument('--directory', type=str)
 parser.add_argument('--small_model', type=str)
 parser.add_argument('--n_ensemble', type=str)
 parser.add_argument('--md', type=str)
@@ -24,10 +23,8 @@ def integrate_predictions():
     predictions = {}
     test_label_loaded = None
     
-    # Extract data name from directory path
-    parts = args.directory.split('/')
-    data_name = parts[-2] if len(parts) > 2 else ""
-    new_directory = f'model/classical_methods/data/{data_name}'
+    data_name = args.dataset
+    new_directory = f'results/{data_name}'
     
     # Compile regex patterns
     pattern1 = re.compile(
@@ -153,8 +150,7 @@ def calculate_metrics(test_logit, labels):
         }
         
         # Extract dataset name and apply standardization
-        path = args.directory
-        dataname = path.split('/')[-2]
+        data_name = args.dataset
         if dataname in stds:
             mae *= stds[dataname]
             rmse = nrmse * stds[dataname]
