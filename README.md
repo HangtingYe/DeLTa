@@ -45,7 +45,8 @@ python run_get_prompt.py
 ```
 
 
-#### 3. query the LLM and get answer
+#### 3. query the LLM and get answer 
+Our method has been validated with these three LLMs (GPT-4o, Qwen3-32B, and Qwen3-8B), though you are also welcome to use other models.
 ```bash
 cd DeLTa-main/llm/query
 python run_get_answer.py
