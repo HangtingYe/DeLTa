@@ -4,7 +4,6 @@
 
 <div style="text-align: center; margin: 20px 0;">
   <img src="picture/framework1-1.png" alt="The DeLTa framework" style="max-width: 100%; height: auto;">
-  <p style="margin-top: 8px; font-weight: 500;">The DeLTa framework</p>
 </div>
 
 
