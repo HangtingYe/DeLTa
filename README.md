@@ -1,11 +1,10 @@
 # LLM Meeting Decision Trees on Tabular Data
 
-## Official implementation of the experiments in the [DeLTa paper]().
-
 <div style="text-align: center; margin: 20px 0;">
   <img src="picture/framework1-1.png" alt="The DeLTa framework" style="max-width: 100%; height: auto;">
 </div>
 
+## Official implementation of the experiments in the [DeLTa paper]().
 
 ## Quick Start
 
