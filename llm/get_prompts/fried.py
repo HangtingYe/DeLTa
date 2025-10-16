@@ -10,20 +10,7 @@ You are an expert in tabular machine learning domain. I will provide the meta in
     "task_intro": "**Author**:   \n**Source**: Unknown - Date unknown  \n**Please cite**:   \n\nThis is an artificial data set used in Friedman (1991) and also\ndescribed in Breiman (1996,p.139). The cases are generated using the\nfollowing method: Generate the values of 10 attributes, X1, ..., X10\nindependently each of which uniformly distributed over [0,1]. Obtain\nthe value of the target variable Y using the equation:\n\nY = 10 * sin(pi * X1 * X2) + 20 * (X3 - 0.5)^2 + 10 * X4 + 5 * X5 + sigma(0,1)\n\nSource: collection of regression datasets by Luis Torgo (ltorgo@ncc.up.pt) at\nhttp://www.ncc.up.pt/~ltorgo/Regression/DataSets.html\nOriginal source: Breiman (1996, p.139).\nCharacteristics: 40768 cases, 11 continuous attributes\n\nReferences\n\nBREIMAN, L. (1996): Bagging Predictors. Machine Learning, 24(3), 123--140. Kluwer Academic Publishers.\nFRIEDMAN, J. (1991): Multivariate Adaptative Regression Splines. Annals of Statistics, 19:1, 1--141.",
     "task_type": "regression",
     "openml_id": 564,
-    "n_classes": 1,
-    "num_feature_intro": {
-        "X1": "X1",
-        "X2": "X2",
-        "X3": "X3",
-        "X4": "X4",
-        "X5": "X5",
-        "X6": "X6",
-        "X7": "X7",
-        "X8": "X8",
-        "X9": "X9",
-        "X10": "X10"
-    },
-    "cat_feature_intro": {}
+    "n_classes": 1
 }
 ## CART tree rules
 
