@@ -16,7 +16,7 @@ def start():
     from dataset_config import dataset_params, default_params
 
     # datasets = list(dataset_params.keys())
-    datasets = ['bank']
+    datasets = ['adult']
     
     # Common parameters
     shot_range = ['full']
