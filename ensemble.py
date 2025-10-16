@@ -150,7 +150,7 @@ def calculate_metrics(test_logit, labels):
         }
         
         # Extract dataset name and apply standardization
-        data_name = args.dataset
+        dataname = args.dataset
         if dataname in stds:
             mae *= stds[dataname]
             rmse = nrmse * stds[dataname]
