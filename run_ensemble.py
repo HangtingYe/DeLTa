@@ -9,7 +9,7 @@ def start():
     # Common parameters
     n_ensembles = ['9']
     # datasets = list(dataset_params.keys())
-    datasets = ['bank']
+    datasets = ['adult']
     
     for dataset in datasets:
         # Get dataset-specific parameters or use defaults
@@ -48,4 +48,5 @@ def start():
 
 if __name__ == "__main__":
     start()
+
     
