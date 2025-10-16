@@ -7,7 +7,7 @@ def start():
 
     # List of datasets to process (uses keys from dataset_params)
     # datasets = list(dataset_params.keys())
-    datasets = ['bank']
+    datasets = ['adult']
     for dataset in datasets:
         # Get parameters for current dataset or use defaults
         params = dataset_params.get(dataset, default_params)
@@ -52,4 +52,5 @@ def start():
 
 if __name__ == "__main__":
     start()
+
     
