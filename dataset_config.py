@@ -11,19 +11,19 @@ dataset_params = {
         'num_class': 2  # Binary classification
     },
     'bank': {
-        'mds': [5],
+        'mds': [20],
         'mls': [50],
         'n_estimators': [15],
         'small_model': 'cart', 
-        'eta':0.2,
+        'eta':0.12,
         'num_class': 2  # Binary classification
     },
     'car': {
-        'mds': [20],
-        'mls': [20],
+        'mds': [10],
+        'mls': [10],
         'n_estimators': [20],
         'small_model': 'cart', 
-        'eta':0.07,  
+        'eta':0.042,  
         'num_class': 4  # Regression
     },
     'blood': {
@@ -31,7 +31,7 @@ dataset_params = {
         'mls': [10],
         'n_estimators': [3],
         'small_model': 'cart', 
-        'eta':0.028, 
+        'eta':0.024, 
         'num_class': 2  # Regression
     },
     'credit-g': {
