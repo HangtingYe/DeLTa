@@ -15,7 +15,7 @@ dataset_params = {
         'mls': [50],
         'n_estimators': [15],
         'small_model': 'cart', 
-        'eta':0.12,
+        'eta':0.17,
         'num_class': 2  # Binary classification
     },
     'car': {
@@ -23,7 +23,7 @@ dataset_params = {
         'mls': [10],
         'n_estimators': [20],
         'small_model': 'cart', 
-        'eta':0.042,  
+        'eta':0.044,  
         'num_class': 4  # Regression
     },
     'blood': {
