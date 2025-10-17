@@ -6,7 +6,7 @@ sys.path.append(project_root)
 from dataset_config import dataset_params, default_params
 def start():
     # Configuration parameters
-    datasets=['adult']
+    datasets=['bank']
     shot_range = ['full']
     current_dir = os.path.dirname(os.path.abspath(__file__))
     for dataset in datasets:
