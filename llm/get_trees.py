@@ -40,7 +40,7 @@ def extract_and_rename_trees(input_directory, output_file,data_item,md,ml,tree):
 
 if __name__ == "__main__":
  
-    dataset=['adult']
+    dataset=['bank']
 
     for data_item in dataset:
         params = dataset_params.get(data_item, default_params)
@@ -58,6 +58,7 @@ if __name__ == "__main__":
                     input_directory = f'answers/{data_item}'
                     output_file = f'{target_directory}/{data_item}.py'
                     extract_and_rename_trees(input_directory, output_file, data_item,md,ml,tree)
+
 
 
 
