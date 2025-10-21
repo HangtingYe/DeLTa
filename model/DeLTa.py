@@ -65,6 +65,14 @@ class DeLTa(classical_methods):
         if model_config is None:
             model_config = self.args.config['model']
         self.data_format(is_train = True)
+
+        save_dir = "reg_info"
+        save_path = os.path.join(save_dir, f"{self.args.dataset}.json")
+        if not os.path.exists(save_path):
+            os.makedirs(save_dir, exist_ok=True)        
+            with open(save_path, "w", encoding="utf-8") as f:
+                json.dump(self.y_info, f, indent=4)  
+            print(f"y_info saved to {save_path}") 
     
         X_train = self.N['train']
         X_val =self.N['val']
