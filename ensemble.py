@@ -112,7 +112,28 @@ def check_softmax(logits):
         return exps / np.sum(exps, axis=1, keepdims=True)
     else:
         return logits
-
+        
+import json
+def load_y_info(dataset_name):
+    save_dir = "reg_info"
+    load_path = os.path.join(save_dir, f"{dataset_name}.json")
+    
+    if not os.path.exists(load_path):
+        print(f"Error: y_info file {load_path} does not exist!")
+        return None  
+    
+    try:
+        with open(load_path, "r", encoding="utf-8") as f:
+            y_info = json.load(f) 
+        print(f"y_info loaded successfully from {load_path}")
+        return y_info  
+    
+    except json.JSONDecodeError:
+        print(f"Error: {load_path} is not a valid JSON file ")
+        return None
+    except Exception as e:
+        print(f"Failed to load y_info from {load_path}, error: {str(e)}")
+        return None
 
 def calculate_metrics(test_logit, labels):
     """
@@ -138,22 +159,11 @@ def calculate_metrics(test_logit, labels):
         mae = skm.mean_absolute_error(labels, test_logit)
         nrmse = np.sqrt(skm.mean_squared_error(labels, test_logit))
         r2 = skm.r2_score(labels, test_logit)
-        
-        # Dataset-specific standardization coefficients
-        stds = {
-            'california_housing': 1.1572733,
-            'Diamonds': 3992.340456361325,
-            'house_16H_reg': 52647.997397551575,
-            'cpu_act': 19.073711119270317,
-            'credit_reg': 0.5,
-            'fried': 5.024967177995651,
-        }
-        
-        # Extract dataset name and apply standardization
-        dataname = args.dataset
-        if dataname in stds:
-            mae *= stds[dataname]
-            rmse = nrmse * stds[dataname]
+        y_info = load_y_info(args.dataset)
+        std = y_info['std']
+        if y_info['policy'] == 'mean_std':
+            mae *= std
+            rmse = nrmse * std
         else:
             rmse = nrmse  # Use unstandardized RMSE if no matching std
         
@@ -187,8 +197,7 @@ def calculate_metrics(test_logit, labels):
         raise ValueError(f"Invalid num_classes value: {args.num_classes}. Use 1 for regression or >=2 for classification")
     
     return metric_values, metric_names
-
-
+    
 def show_results_classical(metric_name, results_list):
     """Display results for classical models"""
     metric_arrays = {name: [] for name in metric_name}
