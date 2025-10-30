@@ -1,4 +1,4 @@
-# [NeurIPS'25]LLM Meeting Decision Trees on Tabular Data
+# [NeurIPS'25 Spotlight]LLM Meeting Decision Trees on Tabular Data
 
 <div style="text-align: center; margin: 20px 0;">
   <img src="picture/framework1-1.png" alt="The DeLTa framework" style="max-width: 100%; height: auto;">
