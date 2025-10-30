@@ -74,7 +74,34 @@ cd DeLTa-main
 python run_ensemble.py
 ```
 
+### Preparing Datasets
+
 Datasets are accessible via [Google Drive](https://drive.google.com/open?id=1JIsivUoM4qeM3MY9jNpXjJJH4VplndCy&usp=drive_fs).
+
+If you wish to use your own dataset,please follow:
+```bash
+cd DeLTa-main/example_datasets
+mkdir [NAME_OF_YOUR_DATASET]
+```
+For the specific format of the dataset, please refer to https://github.com/LAMDA-Tabular/TALENT.
+
+Specifically,each dataset folder args.dataset consists of:
+
+-- Numeric features: N_train/val/test.npy (can be omitted if there are no numeric features)
+
+-- Categorical features: C_train/val/test.npy (can be omitted if there are no categorical features)
+
+-- Labels: y_train/val/test.npy
+
+-- info.json, which must include the following three contents (task_type can be "regression", "multiclass" or "binclass"):
+```bash
+{
+  "task_type": "regression", 
+  "n_num_features": 10,
+  "n_cat_features": 10
+}
+```
+Additionally, please add your dataset and its alternative parameters to the DeLTa-main/dataset_config.py file.
 
 
 
