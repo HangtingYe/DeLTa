@@ -103,7 +103,7 @@ Specifically,each dataset folder args.dataset consists of:
 ```
 Additionally, please add your dataset and its alternative parameters to the DeLTa-main/dataset_config.py file.
 
-
+For regression tasks, we use the default values; for classification tasks, adjustments to the η parameter are required.
 
 ## Citation
 
