@@ -8,7 +8,7 @@
 
 ## Usage Options
 
-### Option1: Quick verify the experiments reported in the paper
+### Option 1: Quick verify the experiments reported in the paper
 
 
 #### 1. Obtain the rules of the RandomForest.
@@ -30,7 +30,7 @@ cd DeLTa-main
 python run_ensemble.py
 ```
 
-### Option2: Including the steps to query the LLM yourself
+### Option 2: Including the steps to query the LLM yourself
 
 #### 1. Obtain the rules of the RandomForest.
  
