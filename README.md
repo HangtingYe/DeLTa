@@ -117,9 +117,11 @@ For regression tasks, we use the default values; for classification tasks, adjus
 
 If our work is useful for your own, you can cite us with the following BibTex entry:
 
-  @article{ye2025llm,
-  title={LLM Meeting Decision Trees on Tabular Data},
-  author={Ye, Hangting and Li, Jinmeng and Zhao, He and Guo, Dandan and Chang, Yi},
-  journal={arXiv preprint arXiv:2505.17918},
-  year={2025}
-  }
+    @article{ye2025llm,
+    title={LLM Meeting Decision Trees on Tabular Data},
+    author={Ye, Hangting and Li, Jinmeng and Zhao, He and Guo, Dandan and Chang, Yi},
+    journal={arXiv preprint arXiv:2505.17918},
+    year={2025}
+    }
+  
+
