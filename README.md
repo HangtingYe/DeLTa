@@ -1,14 +1,22 @@
-# [NeurIPS'25 Spotlight]LLM Meeting Decision Trees on Tabular Data
+<h1 align="center">
+[NeurIPS'25 Spotlight]LLM Meeting Decision Trees on Tabular Data
+Links: [<a href="https://arxiv.org/abs/2505.17918">arXiv</a>][<a href="https://openreview.net/pdf/afc7938654961cd22480af3de9b906056a0211b1.pdf">OpenReview</a>]
+</h1>
+
+**📥 Contact Email Update:** Please use **yeht22@mails.jlu.edu.cn** for all future communications. The previous email (yeht2118@mails.jlu.edu.cn) is no longer active.
+
+## 📖 Overview 
+
+Incorporating LLMs into tabular data suffers from two key inherent issues: (i) data perspective: existing data serialization methods lack universal applicability for structured tabular data, and may pose privacy risks through direct textual exposure, and (ii) model perspective: LLM fine-tuning methods struggle with tabular data, and in-context learning scalability is bottle-necked by input length constraints (suitable for few-shot learning). This work explores a novel direction of integrating LLMs into tabular data through logical decision tree rules as intermediaries (an agent with decision tree rules as scaffolds), proposing a decision tree enhancer with LLM-derived rule for tabular prediction, DeLTa. The proposed DeLTa avoids tabular data serialization and helps mitigate privacy concerns. It can be applied to full data learning setting without LLM fine-tuning.
 
 <div style="text-align: center; margin: 20px 0;">
   <img src="picture/framework1-1.png" alt="The DeLTa framework" style="max-width: 100%; height: auto;">
 </div>
 
-## Official implementation of the experiments in the [DeLTa paper]().
 
-## Usage Options
+## 📚 Usage Options
 
-### Option 1: Quick verify the experiments reported in the paper
+### 🛫 Option 1: Quick verify the experiments reported in the paper
 
 
 #### 1. Obtain the rules of the RandomForest.
@@ -30,7 +38,7 @@ cd DeLTa-main
 python run_ensemble.py
 ```
 
-### Option 2: Including the steps to query the LLM yourself
+### 🖌️ Option 2: Including the steps to query the LLM yourself
 
 #### 1. Obtain the rules of the RandomForest.
  
@@ -105,10 +113,13 @@ Additionally, please add your dataset and its alternative parameters to the DeLT
 
 For regression tasks, we use the default values; for classification tasks, adjustments to the η parameter are required.
 
-## Citation
+## 🤗 Citing the paper
 
-If you use DeLTa in your research, please cite:
+If our work is useful for your own, you can cite us with the following BibTex entry:
 
-```bibtex
-
-```
+  @article{ye2025llm,
+  title={LLM Meeting Decision Trees on Tabular Data},
+  author={Ye, Hangting and Li, Jinmeng and Zhao, He and Guo, Dandan and Chang, Yi},
+  journal={arXiv preprint arXiv:2505.17918},
+  year={2025}
+  }
