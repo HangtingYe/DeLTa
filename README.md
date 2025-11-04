@@ -1,5 +1,6 @@
 <h1 align="center">
-[NeurIPS'25 Spotlight]LLM Meeting Decision Trees on Tabular Data
+[NeurIPS 2025 Spotlight]LLM Meeting Decision Trees on Tabular Data
+  
 Links: [<a href="https://arxiv.org/abs/2505.17918">arXiv</a>][<a href="https://openreview.net/pdf/afc7938654961cd22480af3de9b906056a0211b1.pdf">OpenReview</a>]
 </h1>
 
