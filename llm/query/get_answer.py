@@ -61,8 +61,8 @@ def main():
     # Construct input file path
     input_file = os.path.join(args.base_rule_path, args.rule_path)
     
-    # Execute query (default: 1 query)
-    results = query_openai(input_file, num_queries=1)
+    # Execute query (default: 10 query)
+    results = query_openai(input_file, num_queries=10)
     
     # Save results
     for idx, result in enumerate(results):
@@ -78,4 +78,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
     
