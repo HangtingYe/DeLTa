@@ -3,6 +3,7 @@ import subprocess
 import argparse
 
 def start():
+    """Generate and execute ensemble.py commands for multiple parameter combinations"""
     # Dataset-specific configuration
     from dataset_config import dataset_params, default_params
     
@@ -11,6 +12,7 @@ def start():
     # datasets = list(dataset_params.keys())
     datasets = ['bank']
     
+    # Iterate through target datasets
     for dataset in datasets:
         # Get dataset-specific parameters or use defaults
         params = dataset_params.get(dataset, default_params)
@@ -25,6 +27,7 @@ def start():
             for ml in mls:
                 for tree in n_estimators:
                     for n_ensemble in n_ensembles:
+                        # Build command to execute ensemble.py with current parameters
                         cmd_parts = [
                             'python', 'ensemble.py',
                             '--small_model', small_model,
@@ -36,9 +39,10 @@ def start():
                             '--dataset', dataset,
                         ]
 
+                        # Define log file path for command output
                         log_file = f'results/{dataset}/e_RF_md{md}_ml{ml}_tree{tree}_{dataset}_{small_model}_{n_ensemble}.log'  
                         
-                        # Execute command
+                        # Execute command and redirect output to log file
                         try:
                             print(f"Executing command: {' '.join(cmd_parts)} > {log_file}")
                             with open(log_file, 'w') as f:
@@ -47,7 +51,5 @@ def start():
                             print(f"Command failed: {' '.join(cmd_parts)}\nError: {e}")
 
 if __name__ == "__main__":
+    # Entry point: start command generation and execution
     start()
-
-    
-
