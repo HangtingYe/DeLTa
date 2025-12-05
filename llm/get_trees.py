@@ -7,6 +7,17 @@ sys.path.append(project_root)
 from dataset_config import dataset_params, default_params
 
 def extract_and_rename_trees(input_directory, output_file,data_item,md,ml,tree):
+    """
+    Extracts Python code blocks from target .txt files, renames `self.tree` variables, and writes to output file.
+    
+    Args:
+        input_directory (str): Root dir to search target files (recursive)
+        output_file (str): Path to save processed code blocks
+        data_item (str): Prefix of target file names
+        md (int): `md` value in target file name pattern
+        ml (int): `ml` value in target file name pattern
+        tree (int): `tree` value in target file name pattern
+    """
     with open(output_file, 'w') as out_file:
         for root, _, files in os.walk(input_directory):
             for index, file_name in enumerate(files):
@@ -36,7 +47,6 @@ def extract_and_rename_trees(input_directory, output_file,data_item,md,ml,tree):
                         print(f"File not found: {file_path}")
                     except Exception as e:
                         print(f"Error processing file {file_path}: {e}")
-
 
 if __name__ == "__main__":
  
