@@ -1,9 +1,8 @@
-
 """ 
 If you want to download TabPFN to your local machine for regression tasks, 
 please download the TabPFN weights to the "DeLTa-main/model/models/models_diff/" directory 
 and set the environment variable with the command: 
-export TABPFN_MODEL_CACHE_DIR="DeLTa-main/model/models/models_diff/" 
+export TABPFN_MODEL_CACHE_DIR="DeLTa-main/model/models/models_diff/". 
 """
 
 
@@ -31,6 +30,12 @@ def start():
         n_estimators = params['n_estimators']
         # Directly assign knn from parameters instead of looping
         small_model = params['small_model']
+        
+        # Create results directory for dataset if it doesn't exist
+        results_dir = f"results/{dataset}"
+        if not os.path.exists(results_dir):
+            os.makedirs(results_dir)
+            print(f"Created directory: {results_dir}")
         
         # Build base classify rule path
         base_classify_rule = f'model.llm_rule.{dataset}.'
@@ -81,4 +86,3 @@ def start():
 
 if __name__ == "__main__":
     start()
-    
