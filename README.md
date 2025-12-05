@@ -17,6 +17,13 @@ Incorporating LLMs into tabular data suffers from two key inherent issues: (i) d
 
 ## 📚 Usage Options
 
+### Configure the Environment
+```bash
+conda create -n DeLTa python=3.9 -y
+conda activate DeLTa
+pip install -r requirements.txt   
+```
+
 ### 🛫 Option 1: Quick verify the experiments reported in the paper
 
 
