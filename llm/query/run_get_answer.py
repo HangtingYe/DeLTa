@@ -5,23 +5,39 @@ import itertools
 import argparse
 import os,sys
 import subprocess
+
+# Get project root path and add to system path for module import
 current_script_path = os.path.abspath(__file__)
 project_root = os.path.abspath(os.path.join(os.path.dirname(current_script_path), '..', '..'))
 sys.path.append(project_root)
 from dataset_config import dataset_params, default_params
 
 def start():
+    """
+    Generate and execute commands to run get_answer.py for multiple dataset parameters
+    
+    Iterates over datasets, mds, mls, and tree numbers from config,
+    creates output directories, builds commands, and executes them sequentially.
+    """
+    # Define target datasets to process
     datasets = ['bank']
     cmds = []
+    
+    # Generate commands for each parameter combination
     for dataset in datasets:
+        # Get dataset-specific parameters (fallback to default if not found)
         params = dataset_params.get(dataset, default_params)
         mds = params['mds']
         mls = params['mls']
         trees = params['n_estimators']
+        
+        # Create output directory for answers if not exists
         target_answer_path = f"../answers/{dataset}"
         if not os.path.exists(target_answer_path):
             print(f"Creating prompts directory: {target_answer_path}")
             os.makedirs(target_answer_path)
+        
+        # Build command for each (tree, md, ml) combination
         for tree in trees:
             for md in mds:
                 for ml in mls:
@@ -34,6 +50,7 @@ def start():
                         ]
                     cmds.append(cmd_parts)
     
+    # Execute generated commands sequentially
     for cmd in cmds:
         try:
             print(f"Executing command: {' '.join(cmd)}")
@@ -43,6 +60,5 @@ def start():
 
 
 if __name__ == "__main__":
-
+    # Entry point: start command generation and execution
     start()
-
