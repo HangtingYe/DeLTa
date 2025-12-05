@@ -33,6 +33,10 @@ from sklearn.preprocessing import StandardScaler
 import numpy as np
 
 class DeLTa(classical_methods):
+    """
+    DeLTa class for decision tree-based regression/classification with leaf-level gradient fitting
+    Inherits from classical_methods, supports few-shot/full data training and leaf-wise model refinement
+    """
     def __init__(self, args, is_regression):
         self.args = args
         print(args.config)
@@ -50,6 +54,18 @@ class DeLTa(classical_methods):
         assert(args.cat_policy == 'ordinal')
 
     def fit(self, data, info, train=True, config=None):
+        """
+        Train decision tree model with few-shot/full data sampling (classification/regression)
+        Saves regression info (mean/std) to JSON file and records validation metrics
+        
+        Args:
+            data: Tuple of (N, C, y) containing numerical/categorical features and labels
+            info: Dataset metadata
+            train: Whether to perform model training (False = skip training)
+            config: Optional model configuration override
+        Returns:
+            time_cost: Training time in seconds
+        """
         N, C, y = data
         self.D = Dataset(N, C, y, info)
         self.N, self.C, self.y = self.D.N, self.D.C, self.D.y
@@ -66,6 +82,7 @@ class DeLTa(classical_methods):
             model_config = self.args.config['model']
         self.data_format(is_train = True)
 
+        # Save regression metadata (mean/std) to JSON if not exists
         save_dir = "reg_info"
         save_path = os.path.join(save_dir, f"{self.args.dataset}.json")
         if not os.path.exists(save_path):
@@ -76,6 +93,7 @@ class DeLTa(classical_methods):
     
         X_train = self.N['train']
         X_val =self.N['val']
+        # Initialize decision tree model (regressor/classifier based on task type)
         self.model = DecisionTreeRegressor(max_depth=3, max_leaf_nodes=10) if self.is_regression else DecisionTreeClassifier(max_depth=3, max_leaf_nodes=10)
         if not train:
             return
@@ -85,13 +103,14 @@ class DeLTa(classical_methods):
         tic = time.time()
         self.n_class = len(np.unique(self.y['train']))
  
+        # Classification task: stratified few-shot sampling
         if self.args.task_type == 'cls':
     
             X_train = self.N['train']  
             y_train = self.y['train']  
             
             def stratified_sample(X, y, num_shot, seed):
-                
+                """Stratified sampling for few-shot classification (preserves class distribution)"""
                 saved_random_state = np.random.get_state()
                 np.random.seed(seed)
                 selected_indices = []
@@ -114,6 +133,7 @@ class DeLTa(classical_methods):
                 np.random.set_state(saved_random_state)
                 return X[selected_indices], y[selected_indices]
             
+            # Perform stratified sampling for few-shot training
             X_sampled, y_sampled = stratified_sample(
                 X_train, 
                 y_train,
@@ -124,9 +144,10 @@ class DeLTa(classical_methods):
             self.selected_y = y_sampled
             self.model.fit(X_sampled, y_sampled)
 
-        # todo:2.  low regime for reg
+        # Regression task: random few-shot sampling
         elif self.args.task_type == 'reg':
             def regression_sample(X, y, num_shot, seed):
+                """Random sampling for few-shot regression"""
                 saved_random_state = np.random.get_state()
                 np.random.seed(seed)
                 all_indices = np.arange(len(y))
@@ -135,17 +156,19 @@ class DeLTa(classical_methods):
                 np.random.set_state(saved_random_state)
                 print('regression_sample selected_indices:', selected_indices)
                 return X[selected_indices], y[selected_indices]
+            # Perform random sampling for few-shot regression
             X_sampled, y_sampled = regression_sample(self.N['train'], self.y['train'], num_shot=self.args.shot, seed=self.args.few_shot_random_seed)
             self.selected = X_sampled
             self.selected_y = y_sampled
             self.model.fit(X_sampled, y_sampled)
-        # full data
+        # Full data training (no sampling)
         elif self.args.task_type == 'full':
             self.selected = X_train
             self.selected_y = self.y['train']
             self.model.fit(X_train, self.y['train'])
 
 
+        # Calculate validation metrics (accuracy for classification, RMSE for regression)
         if not self.is_regression:
             y_pred_val = self.model.predict(X_val)
             self.trlog['best_res'] = accuracy_score(self.y['val'], y_pred_val) 
@@ -157,6 +180,7 @@ class DeLTa(classical_methods):
         return time_cost
 
     def assign_leaf(self, tree, sample):
+        """Recursively assign sample to leaf node based on decision tree rules"""
         if "id" in tree:                
             return tree["id"]
         
@@ -178,6 +202,7 @@ class DeLTa(classical_methods):
             raise ValueError(f"Unsupported operator: {operator}")
 
     def build_leaf_index_dict(self, tree, train_data):
+        """Build dictionary mapping leaf IDs to sample indices in training data"""
         leaf_index_dict = defaultdict(list)
         
         for idx, sample in enumerate(train_data):
@@ -186,6 +211,7 @@ class DeLTa(classical_methods):
         return dict(leaf_index_dict)
 
     def calculate_leaf_grad(self):
+        """Train leaf-level regression models to fit negative gradients (classification/regression)"""
         print('fitting negative gradient')
         leaf_grad_dict = {}
         if not self.is_regression:
@@ -208,6 +234,7 @@ class DeLTa(classical_methods):
                     logit = a_
                 
                 def check_softmax(logits):
+                    """Ensure logits are normalized to valid probability distribution"""
                     if np.any((logits < 0) | (logits > 1)) or (not np.allclose(logits.sum(axis=-1), 1, atol=1e-5)):
                         exps = np.exp(logits - np.max(logits, axis=1, keepdims=True))
                         return exps / np.sum(exps, axis=1, keepdims=True)
@@ -294,6 +321,7 @@ class DeLTa(classical_methods):
         return None
 
     def find_sibling_leaf(self, tree, leaf_id):
+        """Find sibling leaf node for a given leaf ID (same parent)"""
         if "id" in tree:
             return None
         if "id" in tree["left"] and tree["left"]["id"] == leaf_id:
@@ -317,6 +345,7 @@ class DeLTa(classical_methods):
 
 
     def replace_subtree(self, tree, subtree, new_subtree):
+        """Recursively replace subtree with new subtree in decision tree"""
         if 'id' in tree:
             return tree
         if tree == subtree:
@@ -326,7 +355,9 @@ class DeLTa(classical_methods):
         if 'right' in tree:
             tree['right'] = self.replace_subtree(tree['right'], subtree, new_subtree)
         return tree
+
     def find_valid_parent(self, tree, leaf_id, real_leaf_id):
+        """Find valid parent node for missing leaf ID and update leaf index dict"""
         parent_leaf = self.find_parent_node(tree, leaf_id)  # Find parent node
         new_tree = {"id": "leaf_x"}
         replace_subtree = self.replace_subtree(tree, parent_leaf, new_tree)
@@ -340,6 +371,7 @@ class DeLTa(classical_methods):
             return self.find_valid_parent(replace_subtree, leaf_id, real_leaf_id)
 
     def find_valid_parent_knn(self, tree, leaf_id, real_leaf_id):
+        """Find valid parent node for missing leaf ID (returns samples/labels for KNN)"""
         parent_leaf = self.find_parent_node(tree, leaf_id)  
         new_tree = {"id": "leaf_x"}
         replace_subtree = self.replace_subtree(tree, parent_leaf, new_tree)
@@ -354,10 +386,23 @@ class DeLTa(classical_methods):
             return self.find_valid_parent_knn(replace_subtree, leaf_id, real_leaf_id)
     
     def predict(self, data, info, model_name):
+        """
+        Predict on test data with leaf-level models, handle missing leaf IDs (sibling/parent fallback)
+        Loads pre-trained RF logits, calculates leaf gradients, and saves test predictions to NPY
+        
+        Args:
+            data: Tuple of (N, C, y) test data
+            info: Dataset metadata
+            model_name: Name of model for logging
+        Returns:
+            vres: Calculated metrics
+            metric_name: Names of metrics
+            test_logit: Test predictions (logits)
+        """
         import importlib
         print('*'*20)
         try:
-
+            # Import decision tree rule function from specified module
             module_name, function_name = self.args.classify_rule.rsplit('.', 1)
             module = importlib.import_module(module_name)
             tree = getattr(module, function_name)
@@ -370,12 +415,12 @@ class DeLTa(classical_methods):
         print('tree:',tree)
         print('*'*20)
 
-        # construct train set leaf nodes
+        # Map training samples to leaf nodes using decision tree rules
         self.leaf_index_dict = self.build_leaf_index_dict(self.tree, self.selected)
         #print('selected:', len(self.selected))
 
     
-        # print(self.args.save_npy)
+        # Extract md/ml/tree parameters from save path
         pattern = r'md(\d+)_ml(\d+)_tree(\d+)'
         import re
         data_names_x = self.args.dataset
@@ -387,6 +432,7 @@ class DeLTa(classical_methods):
             #print(f"md: {md}, ml: {ml}, tree: {tree}")
         else:
             print("no matching...")
+        # Load pre-trained RF train logits (full/few-shot)
         if self.args.task_type == 'full':
             file = f'results/{data_names_x}/{data_names_x}_md{md}_ml{ml}_tree{tree}_train.npy'
         else:
@@ -402,11 +448,12 @@ class DeLTa(classical_methods):
 
         self.if_parallel = True
         self.if_direct = False
+        # Train leaf-level gradient models
         self.leaf_grad_dict = self.calculate_leaf_grad() 
 
-        # test inference
-
+        # Test inference function (group samples by leaf ID)
         def predict_group(X):
+            """Group test samples by leaf ID, predict with leaf-level models (handle missing leaves)"""
             leaf_groups = defaultdict(list)
             for idx, sample in enumerate(X):
                 leaf_id = self.assign_leaf(self.tree, sample.astype(float))
@@ -415,6 +462,7 @@ class DeLTa(classical_methods):
                     leaf_groups[leaf_id].append(a)
                 else:
                     print('leaf_index_dict missing leaf_id:', leaf_id)
+                    # Fallback 1: use sibling leaf ID if available
                     sibling_leaf_id = self.find_sibling_leaf(self.tree, leaf_id)
                     if sibling_leaf_id in self.leaf_index_dict:
                         print(f"{leaf_id} replaced by {sibling_leaf_id}")
@@ -424,11 +472,13 @@ class DeLTa(classical_methods):
                             self.one_model_list[leaf_id] = self.one_model_list[sibling_leaf_id]
                         leaf_groups[leaf_id].append(np.array([idx, sample], dtype=object))
                     else:
+                        # Fallback 2: find parent node for missing leaf
                         print("No sibling, finding parent")
                         leaf_node_samples, leaf_node_labels = self.find_valid_parent_knn(copy.deepcopy(self.tree), leaf_id, leaf_id)
                         self.leaf_grad_dict = self.calculate_leaf_grad()
                         leaf_groups[leaf_id].append(np.array([idx, sample], dtype=object))
             
+            # Collect predictions and sort by sample index
             ID = np.array([])
             PRED = np.array([])
             for leaf_id, samples in leaf_groups.items():
@@ -455,12 +505,14 @@ class DeLTa(classical_methods):
                     else:
                         PRED = np.concatenate((PRED, pred))
             
+            # Sort predictions by original sample index
             sorted_indices = np.argsort(ID, axis=0)
             id_sorted = ID[sorted_indices]
             pred_sorted = PRED[sorted_indices[:, 0]]
             
             return pred_sorted
 
+        # Prepare test data and run prediction
         N, C, y = data
         self.data_format(False, N, C, y)
         test_data = self.N_test
@@ -469,6 +521,7 @@ class DeLTa(classical_methods):
         print('TEST')
         test_logit = predict_group(test_data)
 
+        # Save test predictions (logits + labels) to NPY file
         parts = self.args.classify_rule.split('.')
         name = parts[-2] + '.' + parts[-1]
         data_dict = {
@@ -477,6 +530,6 @@ class DeLTa(classical_methods):
         }
         np.save(self.args.save_npy, data_dict)
         print('test_logit saved! ',self.args.save_npy)
+        # Calculate evaluation metrics
         vres, metric_name = self.metric(test_logit, test_label, self.y_info)
         return vres, metric_name, test_logit
-   
