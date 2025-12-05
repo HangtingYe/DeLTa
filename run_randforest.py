@@ -2,12 +2,14 @@ import os
 import subprocess
 
 def start():
+    """Generate and execute train_model_classical.py commands for multiple parameter combinations"""
     # Dataset-specific parameters stored in a dictionary
     from dataset_config import dataset_params, default_params
 
     # List of datasets to process (uses keys from dataset_params)
     # datasets = list(dataset_params.keys())
     datasets = ['bank']
+    # Iterate through target datasets
     for dataset in datasets:
         # Get parameters for current dataset or use defaults
         params = dataset_params.get(dataset, default_params)
@@ -20,11 +22,12 @@ def start():
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         
-        # Generate commands for all parameter combinations
+        # Generate commands for all parameter combinations (n_estimator/md/ml)
         cmds = []
         for n_estimator in n_estimators_list:
             for md in mds:
                 for ml in mls:
+                    # Build command to execute train_model_classical.py with current parameters
                     cmd_parts = [
                         'python', 'train_model_classical.py',
                         '--task_type', 'full',
@@ -38,10 +41,11 @@ def start():
                         '--save_npy', f'{output_dir}/{dataset}_md{md}_ml{ml}_tree{n_estimator}'
                     ]
                     
+                    # Define log file path for command output
                     log_file = f'{output_dir}/{dataset}_md{md}_ml{ml}_tree{n_estimator}.log'
                     cmds.append((cmd_parts, log_file))
         
-        # Execute all generated commands
+        # Execute all generated commands sequentially
         for cmd_parts, log_file in cmds:
             try:
                 print(f"Executing command: {' '.join(cmd_parts)} > {log_file}")
@@ -51,7 +55,5 @@ def start():
                 print(f"Command failed: {' '.join(cmd_parts)}\nError: {e}")
 
 if __name__ == "__main__":
+    # Entry point: start command generation and execution
     start()
-
-    
-
