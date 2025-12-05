@@ -10,7 +10,7 @@ from model.utils import (
 )
 from sklearn.neural_network import MLPRegressor,MLPClassifier 
 import copy
-import os
+import os,json
 from sklearn.linear_model import LogisticRegression
 from tabpfn import TabPFNClassifier,TabPFNRegressor
 import multiprocessing
