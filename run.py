@@ -2,7 +2,7 @@
 If you want to download TabPFN to your local machine for regression tasks, 
 please download the TabPFN weights to the "DeLTa-main/model/models/models_diff/" directory 
 and set the environment variable with the command: 
-export TABPFN_MODEL_CACHE_DIR="DeLTa-main/model/models/models_diff/" 
+export TABPFN_MODEL_CACHE_DIR="DeLTa-main/model/models/models_diff/"   #It is recommended to use an absolute path.
 """
 
 
