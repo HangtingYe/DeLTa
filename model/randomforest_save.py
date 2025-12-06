@@ -7,7 +7,6 @@ import pandas as pd
 from sklearn.metrics import accuracy_score, mean_squared_error
 from sklearn.tree import export_text
 import numpy as np
-import ipdb
 class RandomForestMethod(classical_methods):
     def __init__(self, args, is_regression):
         super().__init__(args, is_regression)
