@@ -58,7 +58,7 @@ def start():
                     for i in range(len(shot_range)):
                         for j in range(n_answers):
                             cmd_parts = [
-                                'python', 'train_model_classical.py',
+                                'python', 'train.py',
                                 '--task_type', 'full',
                                 '--small_model', small_model,
                                 '--classify_rule', f'{base_classify_rule}{classify_rules[i][j]}',
