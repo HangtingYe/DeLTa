@@ -6,30 +6,33 @@ from model.lib.data import (
     Dataset,
 )
 from model.utils import (
-    get_device
+    get_device,replace_subtree,find_sibling_leaf,build_leaf_index_dict,find_valid_parent_knn,calculate_leaf_grad,assign_leaf,predict_group
 )
-from sklearn.neural_network import MLPRegressor,MLPClassifier 
 import copy
 import os,json
-from sklearn.linear_model import LogisticRegression
 from tabpfn import TabPFNClassifier,TabPFNRegressor
 import multiprocessing
 from multiprocessing import Pool
 from collections import defaultdict
 import pandas as pd
-from catboost import CatBoostClassifier, CatBoostRegressor
 import resource
 resource.setrlimit(resource.RLIMIT_NOFILE, (65536, 65536))
 import numpy as np
 import time
 from sklearn.metrics import accuracy_score, mean_squared_error
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor, export_text
-from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
-from sklearn.linear_model import LinearRegression
-from sklearn.svm import SVR
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 import numpy as np
+
+import importlib
+import numpy as np
+import random
+import pickle
+import sklearn
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+import copy
+
 
 class DeLTa(classical_methods):
     """
@@ -43,10 +46,10 @@ class DeLTa(classical_methods):
         self.D = None
         self.args.device = get_device()
         self.trlog = {}
-        self.leaf_grad_dict = {}#
-        self.model_leaf = {}#
-        self.model_list = {}#
-        self.one_model_list={}#
+        self.leaf_grad_dict = {}
+        self.model_leaf = {}
+        self.model_list = {}
+        self.one_model_list={}
         self.n_class = None
         self.train_logit =None
         self.leaf_index_dict2={}
@@ -92,8 +95,7 @@ class DeLTa(classical_methods):
     
         X_train = self.N['train']
         X_val =self.N['val']
-        # Initialize decision tree model (regressor/classifier based on task type)
-        self.model = DecisionTreeRegressor(max_depth=3, max_leaf_nodes=10) if self.is_regression else DecisionTreeClassifier(max_depth=3, max_leaf_nodes=10)
+
         if not train:
             return
         fit_config = deepcopy(self.args.config['fit'])
@@ -141,7 +143,6 @@ class DeLTa(classical_methods):
             )
             self.selected = X_sampled
             self.selected_y = y_sampled
-            self.model.fit(X_sampled, y_sampled)
 
         # Regression task: random few-shot sampling
         elif self.args.task_type == 'reg':
@@ -159,245 +160,14 @@ class DeLTa(classical_methods):
             X_sampled, y_sampled = regression_sample(self.N['train'], self.y['train'], num_shot=self.args.shot, seed=self.args.few_shot_random_seed)
             self.selected = X_sampled
             self.selected_y = y_sampled
-            self.model.fit(X_sampled, y_sampled)
         # Full data training (no sampling)
         elif self.args.task_type == 'full':
             self.selected = X_train
             self.selected_y = self.y['train']
-            self.model.fit(X_train, self.y['train'])
 
-
-        # Calculate validation metrics (accuracy for classification, RMSE for regression)
-        if not self.is_regression:
-            y_pred_val = self.model.predict(X_val)
-            self.trlog['best_res'] = accuracy_score(self.y['val'], y_pred_val) 
-        else:
-            y_pred_val = self.model.predict(X_val)
-            self.trlog['best_res'] = mean_squared_error(self.y['val'], y_pred_val, squared=False)*self.y_info['std']
-        time_cost = time.time() - tic
         
-        return time_cost
 
-    def assign_leaf(self, tree, sample):
-        """Recursively assign sample to leaf node based on decision tree rules"""
-        if "id" in tree:                
-            return tree["id"]
-        
-        feature = tree["feature"]
-        threshold = tree["threshold"]
-        operator = tree["operator"]
-        
-        if operator == "<=":
-            if sample[feature] <= threshold:
-                return self.assign_leaf(tree["left"], sample)
-            else:
-                return self.assign_leaf(tree["right"], sample)
-        elif operator == ">":
-            if sample[feature] > threshold:
-                return self.assign_leaf(tree["right"], sample)
-            else:
-                return self.assign_leaf(tree["left"], sample)
-        else:
-            raise ValueError(f"Unsupported operator: {operator}")
-
-    def build_leaf_index_dict(self, tree, train_data):
-        """Build dictionary mapping leaf IDs to sample indices in training data"""
-        leaf_index_dict = defaultdict(list)
-        
-        for idx, sample in enumerate(train_data):
-            leaf_id = self.assign_leaf(tree, sample.astype(float)) 
-            leaf_index_dict[leaf_id].append(idx)        
-        return dict(leaf_index_dict)
-
-    def calculate_leaf_grad(self):
-        """Train leaf-level regression models to fit negative gradients (classification/regression)"""
-        print('fitting negative gradient')
-        leaf_grad_dict = {}
-        if not self.is_regression:
-            num_classes = len(np.unique(self.y['train']))
-            for leaf_id, indices in self.leaf_index_dict.items():
-                if leaf_id in self.model_leaf.keys():
-                    continue
-                # true labels
-                leaf_targets = self.selected_y[indices]  # y
-                one_hot_encoding = np.zeros((leaf_targets.shape[0], num_classes), dtype=float)
-                one_hot_encoding[np.arange(leaf_targets.shape[0]), leaf_targets] = 1
-                
-                # construct negative gradient labels
-                logit = self.train_logit[indices]
-                if (leaf_id in self.one_model_list ):  # mlp output has 2 columns
-                    print(leaf_id, 'in', 'one_model_list')
-                    cla = self.one_model_list[leaf_id]  # array([1])
-                    a_ = np.zeros((logit.shape[0], self.n_class), dtype=float)
-                    np.put_along_axis(a_, cla.reshape(1, -1), logit, axis=1)
-                    logit = a_
-                
-                def check_softmax(logits):
-                    """Ensure logits are normalized to valid probability distribution"""
-                    if np.any((logits < 0) | (logits > 1)) or (not np.allclose(logits.sum(axis=-1), 1, atol=1e-5)):
-                        exps = np.exp(logits - np.max(logits, axis=1, keepdims=True))
-                        return exps / np.sum(exps, axis=1, keepdims=True)
-                    else:
-                        return logits
-                
-                softmax_result = check_softmax(logit)
-                leaf_targets2 = one_hot_encoding - softmax_result
-                set_ = self.selected[indices].astype(float)
-                y_ = leaf_targets2
-
-                # train regression model
-                if self.args.small_model == 'cart':
-                    model = DecisionTreeRegressor(max_depth=5, max_leaf_nodes=20, random_state=42)
-                elif self.args.small_model == 'tabpfn':  # 
-                    if set_.shape[0] > 1 and leaf_id not in self.one_model_list.keys():
-                        model = TabPFNRegressor(device='cuda', ignore_pretraining_limits=True, random_state=self.args.seed) 
-                    else:
-                        model = DecisionTreeRegressor(max_depth=5, max_leaf_nodes=20, random_state=42)
-                from sklearn.multioutput import MultiOutputRegressor
-
-                if set_.shape[0] > 5000:
-                    selected_rows = np.random.choice(set_.shape[0], 5000, replace=False) 
-                    set_, y_ = set_[selected_rows], y_[selected_rows]
-
-                model = MultiOutputRegressor(model)
-                model.fit(set_, y_)
-                self.model_leaf[leaf_id] = model
-        else:
-            leaf_grad_dict = {}
-            rf = 0.001
-            for leaf_id, indices in self.leaf_index_dict.items():
-                if leaf_id in self.model_leaf.keys():
-                    continue
-                print('leaf_id :', leaf_id)
-                # true labels
-                leaf_label = self.selected_y[indices]  
-
-                # construct negative gradient labels
-                logit = self.train_logit[indices]
-                leaf_targets2 = leaf_label - rf * logit  # regression negative gradient
-                set_ = self.selected[indices].astype(float)
-                y_ = leaf_targets2
-
-                # train regression model
-                if self.args.small_model == 'cart':
-                    model = DecisionTreeRegressor(max_depth=5, max_leaf_nodes=20, random_state=42)
-                elif self.args.small_model == 'tabpfn':  
-                    if len(set_) == 1 or np.unique(y_).shape[0] == 1:
-                        model = DecisionTreeRegressor(max_depth=5, max_leaf_nodes=20, random_state=42)
-                    else:
-                        model = TabPFNRegressor(device='cuda', ignore_pretraining_limits=True, random_state=self.args.seed)
-
-                if set_.shape[0] > 5000:
-                    selected_rows = np.random.choice(set_.shape[0], 5000, replace=False)
-                    set_, y_ = set_[selected_rows], y_[selected_rows]
-
-                model.fit(set_, y_)
-                self.model_leaf[leaf_id] = model
-
-        return leaf_grad_dict
-
-    def find_parent_node(self, tree, leaf_id):
-        """
-        Find the parent node of a given leaf node.
-        """
-        if "id" in tree:
-            return None  
-
-        if "left" in tree:
-            if "id" in tree["left"] and tree["left"]["id"] == leaf_id:
-                return tree
-            parent_left = self.find_parent_node(tree["left"], leaf_id)
-            if parent_left:
-                return parent_left
-
-        if "right" in tree:
-            if "id" in tree["right"] and tree["right"]["id"] == leaf_id:
-                return tree
-            parent_right = self.find_parent_node(tree["right"], leaf_id)
-            if parent_right:
-                return parent_right
-
-        return None
-
-    def find_sibling_leaf(self, tree, leaf_id):
-        """Find sibling leaf node for a given leaf ID (same parent)"""
-        if "id" in tree:
-            return None
-        if "id" in tree["left"] and tree["left"]["id"] == leaf_id:
-            if "id" in tree["right"]:
-                return tree["right"]["id"]
-            else:
-                return None
-        if "id" in tree["right"] and tree["right"]["id"] == leaf_id:
-            if "id" in tree["left"]:
-                return tree["left"]["id"]
-            else:
-                return None
-        left_result = self.find_sibling_leaf(tree["left"], leaf_id)
-        if left_result is not None:
-            return left_result
-        right_result = self.find_sibling_leaf(tree["right"], leaf_id)
-        if right_result is not None:
-            return right_result
-
-        return None
-
-
-    def replace_subtree(self, tree, subtree, new_subtree):
-        """Recursively replace subtree with new subtree in decision tree"""
-        if 'id' in tree:
-            return tree
-        if tree == subtree:
-            return new_subtree
-        if 'left' in tree:
-            tree['left'] = self.replace_subtree(tree['left'], subtree, new_subtree)
-        if 'right' in tree:
-            tree['right'] = self.replace_subtree(tree['right'], subtree, new_subtree)
-        return tree
-
-    def find_valid_parent(self, tree, leaf_id, real_leaf_id):
-        """Find valid parent node for missing leaf ID and update leaf index dict"""
-        parent_leaf = self.find_parent_node(tree, leaf_id)  # Find parent node
-        new_tree = {"id": "leaf_x"}
-        replace_subtree = self.replace_subtree(tree, parent_leaf, new_tree)
-        parent_leaf_index_dict = self.build_leaf_index_dict(replace_subtree, self.selected)
-        
-        if "leaf_x" in parent_leaf_index_dict:
-            self.leaf_index_dict[real_leaf_id] = parent_leaf_index_dict["leaf_x"]
-            return parent_leaf_index_dict["leaf_x"]
-        else:
-            leaf_id = 'leaf_x'
-            return self.find_valid_parent(replace_subtree, leaf_id, real_leaf_id)
-
-    def find_valid_parent_knn(self, tree, leaf_id, real_leaf_id):
-        """Find valid parent node for missing leaf ID (returns samples/labels for KNN)"""
-        parent_leaf = self.find_parent_node(tree, leaf_id)  
-        new_tree = {"id": "leaf_x"}
-        replace_subtree = self.replace_subtree(tree, parent_leaf, new_tree)
-        parent_leaf_index_dict = self.build_leaf_index_dict(replace_subtree, self.selected)
-
-        if "leaf_x" in parent_leaf_index_dict:
-            self.leaf_index_dict[real_leaf_id] = parent_leaf_index_dict["leaf_x"]
-            #print(f'self.leaf_index_dict after  {real_leaf_id}:', self.leaf_index_dict.keys())
-            return self.selected[self.leaf_index_dict[real_leaf_id]], self.selected_y[self.leaf_index_dict[real_leaf_id]]
-        else:
-            leaf_id = 'leaf_x'
-            return self.find_valid_parent_knn(replace_subtree, leaf_id, real_leaf_id)
-    
-    def predict(self, data, info, model_name):
-        """
-        Predict on test data with leaf-level models, handle missing leaf IDs (sibling/parent fallback)
-        Loads pre-trained RF logits, calculates leaf gradients, and saves test predictions to NPY
-        
-        Args:
-            data: Tuple of (N, C, y) test data
-            info: Dataset metadata
-            model_name: Name of model for logging
-        Returns:
-            vres: Calculated metrics
-            metric_name: Names of metrics
-            test_logit: Test predictions (logits)
-        """
+        #fit
         import importlib
         print('*'*20)
         try:
@@ -406,7 +176,6 @@ class DeLTa(classical_methods):
             module = importlib.import_module(module_name)
             tree = getattr(module, function_name)
             print('tree:', function_name)
-            # print(classify_rule)
         except (ImportError, AttributeError) as e:
             print(f"Error importing classify_rule function: {e}")
 
@@ -415,9 +184,7 @@ class DeLTa(classical_methods):
         print('*'*20)
 
         # Map training samples to leaf nodes using decision tree rules
-        self.leaf_index_dict = self.build_leaf_index_dict(self.tree, self.selected)
-        #print('selected:', len(self.selected))
-
+        self.leaf_index_dict = build_leaf_index_dict(self.tree, self.selected)
     
         # Extract md/ml/tree parameters from save path
         pattern = r'md(\d+)_ml(\d+)_tree(\d+)'
@@ -428,7 +195,6 @@ class DeLTa(classical_methods):
             md = int(match.group(1))
             ml = int(match.group(2))
             tree = int(match.group(3))
-            #print(f"md: {md}, ml: {ml}, tree: {tree}")
         else:
             print("no matching...")
         # Load pre-trained RF train logits (full/few-shot)
@@ -448,69 +214,29 @@ class DeLTa(classical_methods):
         self.if_parallel = True
         self.if_direct = False
         # Train leaf-level gradient models
-        self.leaf_grad_dict = self.calculate_leaf_grad() 
+        self.model_leaf = calculate_leaf_grad(self.args, self.model_leaf, self.leaf_index_dict,self.is_regression, self.selected, self.selected_y, self.train_logit, self.one_model_list, self.n_class)
+        time_cost = time.time() - tic
+        return time_cost
+
+
+    
+    def predict(self, data, info, model_name):
+        """
+        Predict on test data with leaf-level models, handle missing leaf IDs (sibling/parent fallback)
+        Loads pre-trained RF logits, calculates leaf gradients, and saves test predictions to NPY
+        
+        Args:
+            data: Tuple of (N, C, y) test data
+            info: Dataset metadata
+            model_name: Name of model for logging
+        Returns:
+            vres: Calculated metrics
+            metric_name: Names of metrics
+            test_logit: Test predictions (logits)
+        """
 
         # Test inference function (group samples by leaf ID)
-        def predict_group(X):
-            """Group test samples by leaf ID, predict with leaf-level models (handle missing leaves)"""
-            leaf_groups = defaultdict(list)
-            for idx, sample in enumerate(X):
-                leaf_id = self.assign_leaf(self.tree, sample.astype(float))
-                if leaf_id in self.leaf_index_dict.keys():
-                    a = np.array([idx, sample], dtype=object)
-                    leaf_groups[leaf_id].append(a)
-                else:
-                    print('leaf_index_dict missing leaf_id:', leaf_id)
-                    # Fallback 1: use sibling leaf ID if available
-                    sibling_leaf_id = self.find_sibling_leaf(self.tree, leaf_id)
-                    if sibling_leaf_id in self.leaf_index_dict:
-                        print(f"{leaf_id} replaced by {sibling_leaf_id}")
-                        self.leaf_index_dict[leaf_id] = self.leaf_index_dict[sibling_leaf_id]
-                        self.model_leaf[leaf_id] = self.model_leaf[sibling_leaf_id]
-                        if sibling_leaf_id in self.one_model_list:
-                            self.one_model_list[leaf_id] = self.one_model_list[sibling_leaf_id]
-                        leaf_groups[leaf_id].append(np.array([idx, sample], dtype=object))
-                    else:
-                        # Fallback 2: find parent node for missing leaf
-                        print("No sibling, finding parent")
-                        leaf_node_samples, leaf_node_labels = self.find_valid_parent_knn(copy.deepcopy(self.tree), leaf_id, leaf_id)
-                        self.leaf_grad_dict = self.calculate_leaf_grad()
-                        leaf_groups[leaf_id].append(np.array([idx, sample], dtype=object))
-            
-            # Collect predictions and sort by sample index
-            ID = np.array([])
-            PRED = np.array([])
-            for leaf_id, samples in leaf_groups.items():
-                indices = [sample[0] for sample in samples]
-                self.leaf_index_dict2[leaf_id] = indices
-            
-            for leaf_id in leaf_groups.keys():
-                model = self.model_leaf[leaf_id]
-                group = np.array(leaf_groups[leaf_id])
-                group_id = group[:, 0].reshape(-1, 1)
-                if ID.size == 0:
-                    ID = group_id
-                else:
-                    ID = np.vstack((ID, group_id))
-                
-                group_feature = np.array([sample[1] for sample in group])
-                pred = model.predict(group_feature)
-                
-                if PRED.size == 0:
-                    PRED = pred
-                else:
-                    if not self.is_regression:
-                        PRED = np.vstack((PRED, pred))
-                    else:
-                        PRED = np.concatenate((PRED, pred))
-            
-            # Sort predictions by original sample index
-            sorted_indices = np.argsort(ID, axis=0)
-            id_sorted = ID[sorted_indices]
-            pred_sorted = PRED[sorted_indices[:, 0]]
-            
-            return pred_sorted
-
+        
         # Prepare test data and run prediction
         N, C, y = data
         self.data_format(False, N, C, y)
@@ -518,8 +244,19 @@ class DeLTa(classical_methods):
         test_label = self.y_test
         print('*'*20)
         print('TEST')
-        test_logit = predict_group(test_data)
-
+        test_logit = predict_group(
+            X=test_data,  
+            leaf_index_dict=self.leaf_index_dict,  
+            tree=self.tree,  
+            model_leaf=self.model_leaf,  
+            one_model_list=self.one_model_list, 
+            selected=self.selected,  
+            selected_y=self.selected_y,
+            args=self.args,  
+            train_logit=self.train_logit, 
+            n_class=self.n_class,  
+            is_regression=self.is_regression  
+        )
         # Save test predictions (logits + labels) to NPY file
         parts = self.args.classify_rule.split('.')
         name = parts[-2] + '.' + parts[-1]
@@ -530,5 +267,5 @@ class DeLTa(classical_methods):
         np.save(self.args.save_npy, data_dict)
         print('test_logit saved! ',self.args.save_npy)
         # Calculate evaluation metrics
-        vres, metric_name = self.metric(test_logit, test_label, self.y_info)
-        return vres, metric_name, test_logit
+        #vres, metric_name = self.metric(test_logit, test_label, self.y_info)
+        return 
