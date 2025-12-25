@@ -7,7 +7,7 @@ dataset_params = {
         'mls': [50],
         'n_estimators': [15],
         'small_model': 'cart', 
-        'eta':0.2,
+        'eta':0.12,
         'num_class': 2  # Binary classification
     },
     'bank': {
@@ -15,7 +15,7 @@ dataset_params = {
         'mls': [50],
         'n_estimators': [15],
         'small_model': 'cart', 
-        'eta':0.17,
+        'eta':0.2,
         'num_class': 2  # Binary classification
     },
     'car': {
@@ -24,31 +24,32 @@ dataset_params = {
         'n_estimators': [20],
         'small_model': 'cart', 
         'eta':0.044,  
-        'num_class': 4  # Regression
+        'num_class': 4  
     },
     'blood': {
         'mds': [10],
         'mls': [10],
         'n_estimators': [3],
         'small_model': 'cart', 
-        'eta':0.024, 
-        'num_class': 2  # Regression
+        'eta':0.04, 
+        'num_class': 2  
     },
+   
     'credit-g': {
         'mds': [15],
         'mls': [20],
         'n_estimators': [20],
         'small_model': 'cart',  
         'eta':0.1,
-        'num_class': 2  # Regression
+        'num_class': 2  
     },
     'jannis': {
         'mds': [20],
         'mls': [50],
         'n_estimators': [20],
         'small_model': 'cart', 
-        'eta':0.2, 
-        'num_class': 4  # Regression
+        'eta':0.18, 
+        'num_class': 4  
     },
     'cpu_act': {
         'mds': [10],
