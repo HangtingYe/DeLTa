@@ -31,7 +31,7 @@ dataset_params = {
         'mls': [10],
         'n_estimators': [3],
         'small_model': 'cart', 
-        'eta':0.04, 
+        'eta':0.024, 
         'num_class': 2  
     },
    
