@@ -8,9 +8,451 @@ import numpy as np
 import random
 import json
 import os.path as osp
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor, export_text
+from tabpfn import TabPFNClassifier,TabPFNRegressor
+import copy
 
 
 THIS_PATH = os.path.dirname(__file__)
+############## DeLTa ########################
+def assign_leaf(tree, sample):
+    """Recursively assign sample to leaf node based on decision tree rules"""
+    if "id" in tree:                
+        return tree["id"]
+    
+    feature = tree["feature"]
+    threshold = tree["threshold"]
+    operator = tree["operator"]
+    
+    if operator == "<=":
+        if sample[feature] <= threshold:
+            return assign_leaf(tree["left"], sample)
+        else:
+            return assign_leaf(tree["right"], sample)
+    elif operator == ">":
+        if sample[feature] > threshold:
+            return assign_leaf(tree["right"], sample)
+        else:
+            return assign_leaf(tree["left"], sample)
+    else:
+        raise ValueError(f"Unsupported operator: {operator}")
+from collections import defaultdict
+def build_leaf_index_dict(tree, train_data):
+    """Build dictionary mapping leaf IDs to sample indices in training data"""
+    leaf_index_dict = defaultdict(list)
+    
+    for idx, sample in enumerate(train_data):
+        leaf_id = assign_leaf(tree, sample.astype(float)) 
+        leaf_index_dict[leaf_id].append(idx)        
+    return dict(leaf_index_dict)
+
+def replace_subtree(tree, subtree, new_subtree):
+    """Recursively replace subtree with new subtree in decision tree"""
+    if 'id' in tree:
+        return tree
+    if tree == subtree:
+        return new_subtree
+    if 'left' in tree:
+        tree['left'] = replace_subtree(tree['left'], subtree, new_subtree)
+    if 'right' in tree:
+        tree['right'] = replace_subtree(tree['right'], subtree, new_subtree)
+    return tree
+def find_sibling_leaf(tree, leaf_id):
+    """Find sibling leaf node for a given leaf ID (same parent)"""
+    if "id" in tree:
+        return None
+    if "id" in tree["left"] and tree["left"]["id"] == leaf_id:
+        if "id" in tree["right"]:
+            return tree["right"]["id"]
+        else:
+            return None
+    if "id" in tree["right"] and tree["right"]["id"] == leaf_id:
+        if "id" in tree["left"]:
+            return tree["left"]["id"]
+        else:
+            return None
+    left_result = find_sibling_leaf(tree["left"], leaf_id)
+    if left_result is not None:
+        return left_result
+    right_result = find_sibling_leaf(tree["right"], leaf_id)
+    if right_result is not None:
+        return right_result
+
+    return None
+def find_parent_node(tree, leaf_id):
+    """
+    Find the parent node of a given leaf node.
+    """
+    if "id" in tree:
+        return None  
+
+    if "left" in tree:
+        if "id" in tree["left"] and tree["left"]["id"] == leaf_id:
+            return tree
+        parent_left = find_parent_node(tree["left"], leaf_id)
+        if parent_left:
+            return parent_left
+
+    if "right" in tree:
+        if "id" in tree["right"] and tree["right"]["id"] == leaf_id:
+            return tree
+        parent_right = find_parent_node(tree["right"], leaf_id)
+        if parent_right:
+            return parent_right
+
+    return None
+def find_valid_parent_knn(tree, leaf_id, real_leaf_id, leaf_index_dict, selected):
+    """Find valid parent node for missing leaf ID (returns samples/labels for KNN)"""
+    parent_leaf = find_parent_node(tree, leaf_id)  
+    new_tree = {"id": "leaf_x"}
+    replaced_subtree = replace_subtree(tree, parent_leaf, new_tree)
+    parent_leaf_index_dict = build_leaf_index_dict(replaced_subtree, selected)
+
+    if "leaf_x" in parent_leaf_index_dict:
+        leaf_index_dict[real_leaf_id] = parent_leaf_index_dict["leaf_x"]
+        return leaf_index_dict
+    else:
+        leaf_id = 'leaf_x'
+        return find_valid_parent_knn(replaced_subtree, leaf_id, real_leaf_id, leaf_index_dict, selected)
+
+def calculate_leaf_grad(args, model_leaf, leaf_index_dict,is_regression, selected, selected_y, train_logit, one_model_list, n_class):
+    """Train leaf-level regression models to fit negative gradients (classification/regression)"""
+    print('fitting negative gradient')
+    if not is_regression:
+        num_classes = len(np.unique(selected_y))
+        for leaf_id, indices in leaf_index_dict.items():
+            if leaf_id in model_leaf.keys():
+                continue
+            # true labels
+            leaf_targets = selected_y[indices]  # y
+            one_hot_encoding = np.zeros((leaf_targets.shape[0], num_classes), dtype=float)
+            one_hot_encoding[np.arange(leaf_targets.shape[0]), leaf_targets] = 1
+            
+            # construct negative gradient labels
+            logit = train_logit[indices]
+            if (leaf_id in one_model_list):  # mlp output has 2 columns
+                print(leaf_id, 'in', 'one_model_list')
+                cla = one_model_list[leaf_id]  # array([1])
+                a_ = np.zeros((logit.shape[0], n_class), dtype=float)
+                np.put_along_axis(a_, cla.reshape(1, -1), logit, axis=1)
+                logit = a_
+            
+            def check_softmax(logits):
+                """Ensure logits are normalized to valid probability distribution"""
+                if np.any((logits < 0) | (logits > 1)) or (not np.allclose(logits.sum(axis=-1), 1, atol=1e-5)):
+                    exps = np.exp(logits - np.max(logits, axis=1, keepdims=True))
+                    return exps / np.sum(exps, axis=1, keepdims=True)
+                else:
+                    return logits
+            
+            softmax_result = check_softmax(logit)
+            leaf_targets2 = one_hot_encoding - softmax_result
+            set_ = selected[indices].astype(float)
+            y_ = leaf_targets2
+
+            # train regression model
+            if args.small_model == 'cart':
+                model = DecisionTreeRegressor(max_depth=5, max_leaf_nodes=20, random_state=42)
+            elif args.small_model == 'tabpfn': 
+                if set_.shape[0] > 1 and leaf_id not in one_model_list.keys():
+                    model = TabPFNRegressor(device='cuda', ignore_pretraining_limits=True, random_state=args.seed) 
+                else:
+                    model = DecisionTreeRegressor(max_depth=5, max_leaf_nodes=20, random_state=42)
+            from sklearn.multioutput import MultiOutputRegressor
+
+            if set_.shape[0] > 5000:
+                selected_rows = np.random.choice(set_.shape[0], 5000, replace=False) 
+                set_, y_ = set_[selected_rows], y_[selected_rows]
+
+            model = MultiOutputRegressor(model)
+            model.fit(set_, y_)
+            model_leaf[leaf_id] = model
+    else:
+        rf = 0.001
+        for leaf_id, indices in leaf_index_dict.items():
+            if leaf_id in model_leaf.keys():
+                continue
+            print('leaf_id :', leaf_id)
+            # true labels
+            leaf_label = selected_y[indices]  
+
+            # construct negative gradient labels
+            logit = train_logit[indices]
+            leaf_targets2 = leaf_label - rf * logit  # regression negative gradient
+            set_ = selected[indices].astype(float)
+            y_ = leaf_targets2
+
+            # train regression model
+            if args.small_model == 'cart':
+                model = DecisionTreeRegressor(max_depth=5, max_leaf_nodes=20, random_state=42)
+            elif args.small_model == 'tabpfn':  
+                if len(set_) == 1 or np.unique(y_).shape[0] == 1:
+                    model = DecisionTreeRegressor(max_depth=5, max_leaf_nodes=20, random_state=42)
+                else:
+                    model = TabPFNRegressor(device='cuda', ignore_pretraining_limits=True, random_state=args.seed)
+
+            if set_.shape[0] > 5000:
+                selected_rows = np.random.choice(set_.shape[0], 5000, replace=False)
+                set_, y_ = set_[selected_rows], y_[selected_rows]
+
+            model.fit(set_, y_)
+            model_leaf[leaf_id] = model
+
+    return model_leaf
+
+def predict_group(X, leaf_index_dict, tree, model_leaf, one_model_list, selected, selected_y, args, train_logit, n_class, is_regression):
+    """Group test samples by leaf ID, predict with leaf-level models (handle missing leaves)"""
+    leaf_groups = defaultdict(list)
+    for idx, sample in enumerate(X):
+        leaf_id = assign_leaf(tree, sample.astype(float))
+        if leaf_id in leaf_index_dict.keys():
+            a = np.array([idx, sample], dtype=object)
+            leaf_groups[leaf_id].append(a)
+        else:
+            print('leaf_index_dict missing leaf_id:', leaf_id)
+            # Fallback 1: use sibling leaf ID if available
+            sibling_leaf_id = find_sibling_leaf(tree, leaf_id)
+            if sibling_leaf_id in leaf_index_dict:
+                print(f"{leaf_id} replaced by {sibling_leaf_id}")
+                leaf_index_dict[leaf_id] = leaf_index_dict[sibling_leaf_id]
+                model_leaf[leaf_id] = model_leaf[sibling_leaf_id]
+                if sibling_leaf_id in one_model_list:
+                    one_model_list[leaf_id] = one_model_list[sibling_leaf_id]
+                leaf_groups[leaf_id].append(np.array([idx, sample], dtype=object))
+            else:
+                # Fallback 2: find parent node for missing leaf
+                print("No sibling, finding parent")
+                leaf_index_dict = find_valid_parent_knn(copy.deepcopy(tree), leaf_id, leaf_id, leaf_index_dict, selected)
+                model_leaf = calculate_leaf_grad(args, model_leaf, leaf_index_dict,is_regression, selected, selected_y, train_logit, one_model_list, n_class)
+                leaf_groups[leaf_id].append(np.array([idx, sample], dtype=object))
+    
+    # Collect predictions and sort by sample index
+    ID = np.array([])
+    PRED = np.array([])
+   
+    for leaf_id in leaf_groups.keys():
+        model = model_leaf[leaf_id]
+        group = np.array(leaf_groups[leaf_id])
+        group_id = group[:, 0].reshape(-1, 1)
+        if ID.size == 0:
+            ID = group_id
+        else:
+            ID = np.vstack((ID, group_id))
+        
+        group_feature = np.array([sample[1] for sample in group])
+        pred = model.predict(group_feature)
+        
+        if PRED.size == 0:
+            PRED = pred
+        else:
+            if not is_regression:
+                PRED = np.vstack((PRED, pred))
+            else:
+                PRED = np.concatenate((PRED, pred))
+    
+    # Sort predictions by original sample index
+    sorted_indices = np.argsort(ID, axis=0)
+    id_sorted = ID[sorted_indices]
+    pred_sorted = PRED[sorted_indices[:, 0]]
+    
+    return pred_sorted  
+################################################
+############## ensemble ########################
+import re
+def integrate_predictions(args):
+    """Integrate prediction results and labels by loading data from files"""
+    predictions = {}
+    test_label_loaded = None
+    
+    data_name = args.dataset
+    new_directory = f'results/{data_name}'
+    
+    # Compile regex patterns
+    pattern1 = re.compile(
+        fr"RF_md{args.md}_ml{args.ml}_tree{args.tree}_full_{args.small_model}_([0-{int(args.n_ensemble)}]).npy")
+    pattern2 = re.compile(
+        fr"{args.dataset}_md{args.md}_ml{args.ml}_tree{args.tree}.npy")
+    
+    # Process files in directory
+    for root, _, files in os.walk(new_directory):
+        for file in files:
+            # Check for pattern1 matches
+            if pattern1.search(file):
+                file_path = os.path.join(root, file)
+                loaded_data = np.load(file_path, allow_pickle=True).item()
+                predictions[file_path] = loaded_data['logit']
+                current_label = loaded_data['label']
+                
+            # Check for pattern2 matches
+            elif pattern2.search(file):
+                file_path = os.path.join(root, file)
+                print(f'file_path: {file_path}')
+                loaded_data = np.load(file_path, allow_pickle=True).item()
+                predictions[file_path] = loaded_data['logit']
+                current_label = loaded_data['label']
+                
+            # Skip non-matching files
+            else:
+                continue
+                
+            # Validate label consistency
+            if test_label_loaded is None:
+                test_label_loaded = current_label
+            elif not np.array_equal(test_label_loaded, current_label):
+                raise ValueError("Inconsistent labels detected between files.")
+    
+    return predictions, test_label_loaded
+import json
+def load_y_info(dataset_name):
+    save_dir = "reg_info"
+    load_path = os.path.join(save_dir, f"{dataset_name}.json")
+    
+    if not os.path.exists(load_path):
+        print(f"Error: y_info file {load_path} does not exist!")
+        return None  
+    
+    try:
+        with open(load_path, "r", encoding="utf-8") as f:
+            y_info = json.load(f) 
+        print(f"y_info loaded successfully from {load_path}")
+        return y_info  
+    
+    except json.JSONDecodeError:
+        print(f"Error: {load_path} is not a valid JSON file ")
+        return None
+    except Exception as e:
+        print(f"Failed to load y_info from {load_path}, error: {str(e)}")
+        return None
+def ensemble_vote(args,predictions, is_rf=False):
+    """
+    Ensemble predictions from multiple models
+    
+    Args:
+        predictions: Dictionary of {file_path: logits}
+        is_rf: Whether to use RF voting criteria (True=RF, False=LM)
+        
+    Returns:
+        np.array: Ensemble class distributions
+    """
+    # Filter predictions based on voting type
+    P = []
+    for key in predictions.keys():
+        # RF voting criteria
+        if is_rf:
+            if f'md{args.md}_ml{args.ml}_tree{args.tree}' in key and args.small_model not in key:
+                P.append(predictions[key])
+                print('RF_vote:', key)
+        # LM voting criteria
+        else:
+            if f'md{args.md}_ml{args.ml}_tree{args.tree}_full' in key and args.small_model in key:
+                P.append(predictions[key])
+                print('LM_vote:', key)
+
+    if not P:
+        raise ValueError("No matching predictions found for voting")
+    
+    num_samples = len(P[0])
+    class_distribution = []
+    
+    # Use mean for regression, sum for classification
+    aggregation_func = np.mean if int(args.num_classes) == 1 else np.sum
+    
+    for i in range(num_samples):
+        sample_predictions = [pred[i] for pred in P]
+        aggregated = aggregation_func(sample_predictions, axis=0)
+        class_distribution.append(aggregated)
+    
+    return np.array(class_distribution)
+def check_softmax(logits):
+    """Check and ensure input is normalized softmax probability distribution"""
+    if np.any((logits < 0) | (logits > 1)) or (not np.allclose(logits.sum(axis=-1), 1, atol=1e-5)):
+        exps = np.exp(logits - np.max(logits, axis=1, keepdims=True)) 
+        return exps / np.sum(exps, axis=1, keepdims=True)
+    else:
+        return logits
+def calculate_metrics(args,test_logit, labels):
+    """
+    Automatically determine task type and calculate metrics based on number of classes:
+    - Regression when num_classes == 1
+    - Classification when num_classes >= 2
+    
+    Parameters:
+        test_logit: Model predictions (numeric values for regression, logits/probabilities for classification)
+        labels: Ground truth labels
+    
+    Returns:
+        metric_values: Tuple of metric values
+        metric_names: Tuple of metric names
+    """
+    # Determine task type based on number of classes
+    if int(args.num_classes) == 1:
+        # Regression task handling
+        if args is None:
+            raise ValueError("args parameter is required for regression tasks")
+            
+        # Basic regression metrics
+        mae = skm.mean_absolute_error(labels, test_logit)
+        nrmse = np.sqrt(skm.mean_squared_error(labels, test_logit))
+        r2 = skm.r2_score(labels, test_logit)
+        y_info = load_y_info(args.dataset)
+        std = y_info['std']
+        if y_info['policy'] == 'mean_std':
+            mae *= std
+            rmse = nrmse * std
+        else:
+            rmse = nrmse  # Use unstandardized RMSE if no matching std
+        
+        metric_values = (mae, r2, rmse, nrmse)
+        metric_names = ("MAE", "R2", "RMSE", "nRMSE")
+        
+    elif int(args.num_classes) >= 2:
+        # Classification task handling
+        # Ensure input is normalized probability distribution
+        test_logit = check_softmax(test_logit)
+        pred_labels = test_logit.argmax(axis=-1)
+        
+        # Common classification metrics
+        accuracy = skm.accuracy_score(labels, pred_labels)
+        avg_recall = skm.balanced_accuracy_score(labels, pred_labels)
+        avg_precision = skm.precision_score(labels, pred_labels, average='macro')
+        log_loss = skm.log_loss(labels, test_logit)
+        
+        # Binary vs multi-class handling
+        if int(args.num_classes) == 2:
+            f1_score = skm.f1_score(labels, pred_labels, average='binary')
+            auc = skm.roc_auc_score(labels, test_logit[:, 1])
+        else:
+            f1_score = skm.f1_score(labels, pred_labels, average='macro')
+            auc = skm.roc_auc_score(labels, test_logit, average='macro', multi_class='ovr')
+        
+        metric_values = (accuracy, avg_recall, avg_precision, f1_score, log_loss, auc)
+        metric_names = ("Accuracy", "Avg_Recall", "Avg_Precision", "F1", "LogLoss", "AUC")
+        
+    else:
+        raise ValueError(f"Invalid num_classes value: {args.num_classes}. Use 1 for regression or >=2 for classification")
+    
+    return metric_values, metric_names
+def show_results(args,metric_name, results_list):
+    """Display results for classical models"""
+    metric_arrays = {name: [] for name in metric_name}
+
+    for result in results_list:
+        for idx, name in enumerate(metric_name):
+            metric_arrays[name].append(result[idx])
+    
+    mean_metrics = {name: np.mean(metric_arrays[name]) for name in metric_name}
+    std_metrics = {name: np.std(metric_arrays[name]) for name in metric_name}
+
+    # Printing results
+    print(f'ensemble: {1} Trials')
+    for name in metric_name:
+        formatted_results = ', '.join(['{:.8f}'.format(e) for e in metric_arrays[name]])
+        print(f'{name} Results: {formatted_results}')
+        print(f'{name} MEAN = {mean_metrics[name]:.8f} ± {std_metrics[name]:.8f}')
+
+    print('-' * 50)
+######################################
+
 
 def mkdir(path):
     """
@@ -283,7 +725,7 @@ def get_classical_args():
     parser.add_argument('--dataset', type=str, default=default_args['dataset'])
     parser.add_argument('--model_type', type=str, 
                         default=default_args['model_type'], 
-                        choices=['RandomForest_save','DeLTa'])#todo?:
+                        choices=['RandomForest_save','DeLTa','DeLTa1'])#todo
 
     # optimization parameters 
     parser.add_argument('--normalization', type=str, default=default_args['normalization'], choices=['none', 'standard', 'minmax', 'quantile', 'maxabs', 'power', 'robust'])
@@ -737,6 +1179,9 @@ def get_method(model):
         return RandomForestMethod
     elif model == 'DeLTa':
         from model.DeLTa import DeLTa
+        return DeLTa
+    elif model == 'DeLTa1':
+        from model.DeLTa1 import DeLTa
         return DeLTa
     else:
         raise NotImplementedError("Model \"" + model + "\" not yet implemented")
